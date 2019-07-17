@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 func main() {
-	hs := ProcessFiles()
+	hs := ProcessHFiles()
 	for _, h := range hs {
-		fmt.Printf("h(%s)=%d\n", h.getFileName(), h.getValue())
+		fmt.Printf("h(%s)=%d\n", h.GetFileName(), h.GetValue())
 	}
 }
