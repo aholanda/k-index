@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -156,24 +155,20 @@ func (self *Index) Calculate(fileName string) (n int, err error) {
 
 	for i = 1; ; i++ {
 		c := self.ParseLine(<-line)
+
+		if c == 0 {
+			continue
+		}
 		if i > c {
 			i--
 			hasEnoughRecords = true
 			break
 		}
 	}
+
 	if hasEnoughRecords == false {
 		return -1, fmt.Errorf("There is not enough records to calculate index!")
 	} else {
 		return i, nil
 	}
-}
-
-// List files from data directory
-func ListFiles(regex string) (fileNames []string) {
-	fileNames, err := filepath.Glob("./" + DataDir + regex)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return fileNames
 }
