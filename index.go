@@ -25,20 +25,23 @@ type Indexer interface {
 	Calculate(fileName string) (n int, err error)
 }
 
-type Index struct {
-	Value int // Index value.
-	// File name to parse and calculate the index.
-	FileName string
-	// Common file attributes for the index.
-	FileAttrs *FileAttrs
-}
-
 type FileAttrs struct {
 	FileExt  string // File extension
 	FieldSep string // What character separate fields
 	// regex string composed by rules that may be
 	// applied to ignore lines.
 	LineIgnoredRegExp string
+}
+
+type Index struct {
+	Value int // Index value.
+	// File name to parse and calculate the index.
+	FileName string
+	// Common file attributes for the index.
+	FileAttrs FileAttrs
+	// parseLine() count the citations or citings
+	// depending on the index.
+	ParseLine func(string) int
 }
 
 func (i Index) GetFileName() string {
@@ -49,8 +52,28 @@ func (i Index) SetFileName(fileName string) {
 	i.FileName = fileName
 }
 
+func (i Index) GetFileAttrs() FileAttrs {
+	return i.FileAttrs
+}
+
+func (i Index) SetFileAttrs(fileAttrs FileAttrs) {
+	i.FileAttrs = fileAttrs
+}
+
 func (i Index) GetValue() int {
 	return i.Value
+}
+
+func (i Index) SetValue(value int) {
+	i.Value = value
+}
+
+func (i Index) GetFuncParseLine() func(string) int {
+	return i.ParseLine
+}
+
+func (i Index) SetFuncParseLine(pl func(string) int) {
+	i.ParseLine = pl
 }
 
 // Read a file ignoring some lines.
@@ -83,8 +106,31 @@ func Read(fileAttrs FileAttrs, fileName string, line chan string) {
 		}
 
 		// Process the line here.
-		fmt.Println(ln)
 		line <- ln
+	}
+}
+
+func (self *Index) Calculate(fileName string) (n int, err error) {
+	line := make(chan string)
+	var i int
+	// Mark if the index was calculated with the
+	// available records
+	hasEnoughRecords := false
+
+	go Read(self.GetFileAttrs(), fileName, line)
+
+	for i = 1; ; i++ {
+		c := self.ParseLine(<-line)
+		if i > c {
+			i--
+			hasEnoughRecords = true
+			break
+		}
+	}
+	if hasEnoughRecords == false {
+		return -1, fmt.Errorf("There is not enough records to calculate index!")
+	} else {
+		return i, nil
 	}
 }
 
