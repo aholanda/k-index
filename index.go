@@ -17,6 +17,40 @@ const (
 	DataDir = "data/"
 )
 
+// Type to enumerate indexes
+type IndexId int8
+
+const (
+	HIndexId IndexId = 0
+	KIndexId IndexId = 1
+)
+
+func (id IndexId) String() string {
+	names := [...]string{
+		"h-index",
+		"K-index",
+	}
+
+	if id < HIndexId || id > KIndexId {
+		return "Unknown index"
+	}
+
+	return names[id]
+}
+
+func FileExtension(id IndexId) string {
+	switch id {
+	case HIndexId:
+		return ".csv"
+	case KIndexId:
+		return ".tsv"
+	default:
+		log.Fatalf("Unknown index: %d\n", id)
+	}
+	// very unlikely
+	return ""
+}
+
 // An Indexer interface propose a method to
 // perform the index calculation that returns
 // an int value corresponding to the index and
@@ -78,8 +112,8 @@ func (i Index) SetFuncParseLine(pl func(string) int) {
 
 // Read a file ignoring some lines.
 // Use chanel to send the line to be processed.
-func Read(fileAttrs FileAttrs, fileName string, line chan string) {
-	rules := fileAttrs.LineIgnoredRegExp
+func (self *Index) Read(fileName string, line chan string) {
+	rules := self.FileAttrs.LineIgnoredRegExp
 	lineIgnored := regexp.MustCompile(rules)
 
 	file, err := os.Open(fileName)
@@ -106,6 +140,7 @@ func Read(fileAttrs FileAttrs, fileName string, line chan string) {
 		}
 
 		// Process the line here.
+		// Send the line to the parser.
 		line <- ln
 	}
 }
@@ -117,7 +152,7 @@ func (self *Index) Calculate(fileName string) (n int, err error) {
 	// available records
 	hasEnoughRecords := false
 
-	go Read(self.GetFileAttrs(), fileName, line)
+	go self.Read(fileName, line)
 
 	for i = 1; ; i++ {
 		c := self.ParseLine(<-line)
