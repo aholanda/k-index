@@ -67,7 +67,8 @@ type FileAttrs struct {
 }
 
 type Index struct {
-	Value int // Index value.
+	Id    IndexId // Index identification
+	Value int     // Index value.
 	// File name to parse and calculate the index.
 	FileName string
 	// Common file attributes for the index.
