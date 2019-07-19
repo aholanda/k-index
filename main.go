@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"path/filepath"
 )
@@ -43,12 +42,13 @@ func ProcessFiles(id IndexId) []*Index {
 }
 
 func main() {
-	//ids := [2]IndexId{HIndexId, KIndexId}
-	ids := [1]IndexId{KIndexId}
+	var indices []*Index
+	ids := [2]IndexId{HIndexId, KIndexId}
 	for _, id := range ids {
-		is := ProcessFiles(id)
-		for _, i := range is {
-			fmt.Printf("%v(%s)=%d\n", id, i.GetFileName(), i.GetValue())
+		idxs := ProcessFiles(id)
+		for _, idx := range idxs {
+			indices = append(indices, idx)
 		}
 	}
+	WriteRank(indices)
 }
