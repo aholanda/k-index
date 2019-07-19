@@ -8,6 +8,7 @@ import (
 
 func NewKIndex() *Index {
 	idx := &Index{
+		Id: KIndexId,
 		FileAttrs: FileAttrs{
 			FileExt:           FileExtension(KIndexId),
 			FieldSep:          "\t",

@@ -37,6 +37,7 @@ func (self *Index) CountCitations(line string) int {
 
 func NewHIndex() *Index {
 	idx := &Index{
+		Id: HIndexId,
 		FileAttrs: FileAttrs{
 			FileExt:           FileExtension(HIndexId),
 			FieldSep:          ",",
