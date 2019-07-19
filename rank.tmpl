@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web of Science</title>
+  </head>
+  <body>
+    <table rules="all">
+      	<tr>
+          <th>Author    </th>
+          <th>Area      </th>
+          <th>h-index   </th>
+          <th>K-inddex  </th>
+    	</tr>
+			{{ range .Authors }}
+      			<tr>
+              		<td>{{ .Name }}     </td>
+              		<td>{{ .Area }}     </td>
+                    <td>{{ .HIndex }}   </td>
+                    <td>{{ .KIndex }}   </td>
+      			</tr>
+			{{ end }} 
+    </table>
+  </body>
+</html>
