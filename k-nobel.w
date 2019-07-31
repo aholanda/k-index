@@ -283,9 +283,10 @@ fp = fopen(fn, "w");
 if (!fp)
    perror(fn);
 
-fprintf(fp, "|Author|h|k|\n");
+fprintf(fp, "| Author | h | k |\n");
+fprintf(fp, "|--------|---|---|\n");
 for (i=0; i<A; i++) {
-    fprintf(fp, "|[%s](%s)|%d|%d|\n",
+    fprintf(fp, "| [%s](%s) | %d | %d |\n",
        authors[i]->name, authors[i]->url,
        authors[i]->h, authors[i]->k);
 }
