@@ -4,7 +4,7 @@
 @<Include files@>@;
 @<Data structures@>@;
 @<Internal variables@>@;
-@<Functions@>@;
+@<Static functions@>@;
 
 @ @c
 int main(int argc, char **argv) {
@@ -171,12 +171,37 @@ if (strstr(line, "AUTHOR") != NULL) {
   h++;
 }
 
+@** K-index. If an author receives at least K citations, where each
+one of these K citations have get at least K citation, then the
+author's K-index was found. On Web of Science homepage, the procedure
+to find the K of an author is as follows:
+
+\begingroup
+\parindent=2cm
+\item{$\star$} Search for an author's publications;
+\item{$\star$} Click on the link {\it Create Citation Report\/};
+\item{$\star$} Click on the link {\it Citing Articles without self-citations\/};
+\item{$\star$} Traverse the list, stoping when the rank position of the article were
+      greater than the {\it Times Cited\/};
+\item{$\star$} Subtract on from the rank position, this is the K value.
+\endgroup\smallskip
+
+To calculate in batch mode, we downloaded a file with the data to
+calculate the K by clicking on the button {\it Export...\/} and
+selecting {\it Fast 5K\/} format that saves the same data, with limit
+of 5.000 records, where each field is separated by one or more tabs
+that is represented by the macro |TSV_SEP|. The files were saved with
+a ".tsv" extension inside |DATA_DIRECTORY|. All authors' files are
+traversed, parsed and K-index is calculated. The results are saved in
+a file.
+
 @ @<Calculate K index@>=
 for (i=0; i<A; i++) {/* for each author */
     @<Process tsv file@>@;
 }
 
-@
+@ To open the proper file the Researcher ID is concatenated with
+|DATA_DIRECTORY| as prefix and the file extension |K_EXT| as suffix.
 
 @d K_EXT ".tsv"
 
@@ -196,13 +221,11 @@ if (fp) {
     perror(fn);
 }
 
-
-@
+@ The file with citings has few lines to ignore, basically it's only one
+that begins with "PT $\backslash$t" (ignore double quotes). A line that begins
+with new line command ignored too, but only for caution.
 
 @<Parse the line counting citings@>=
-@<Ignore the header of citings file@>@;
-
-@ @<Ignore the header of citings file@>=
 if (strstr(line, "PT\t") != NULL) {
     continue;
 } else if (line[0] == '\n') { /* start with new line */
@@ -211,7 +234,13 @@ if (strstr(line, "PT\t") != NULL) {
     @<Find the citings and check if the K-index was found@>@;
 }
 
-@** K-index.
+@ |K_SKIP| represents the fields to be skiped before {\it Times Cited\/}
+value is reached. Its value is not fixed and for this reason it was
+implemented a tricky way to get the {\it Times Cited\/} value: after
+|K_SKIP| is passed, each field is accumulated in a queue and when the
+end of the record is reached, the queue is dequeue three times to get
+the {\it Times Cited\/} value. This position offset of {\it Times
+Cited\/} value from the end is fixed for all files.
 
 @d TSV_SEP "\t"
 @d K_SKIP 7 /* number of fields that can be skiped with safety */
@@ -244,13 +273,20 @@ if (strstr(line, "PT\t") != NULL) {
   k++;
 }
 
-@ Queue.
+@** Queue. A humble queue is implemented to store few pointers using
+FIFO policy. The queue is composed by an array of pointers and an index
+|idx| that marks the top element of the queue.
 
 @<Internal...@>=
 static char *stack[64];
 static int idx=0;
 
-@ @<Functions@>=
+@ Elements are inserted at the top of the queue by invoking
+|enqueue| and using |char *p| as parameter. The index |idx|
+is incremented to the number of elements in the queue and
+|idx-1| is the top of the queue.
+
+@<Static...@>=
 static void enqueue(char *p) {
        if (p == NULL)
          return;
@@ -258,6 +294,10 @@ static void enqueue(char *p) {
  	stack[idx++] = p;
 }
 
+@ Elements from the top of the queue are removed by |dequeue|
+function. If there is no element in the queue, |NULL| is returned.
+
+@<Static...@>=
 static char* dequeue() {
        if (idx <= 0)
           return NULL;
@@ -265,17 +305,27 @@ static char* dequeue() {
 	  return stack[--idx];
 }
 
+@ When for some reason, an error related with the queue occurs
+|queue_panic| may be invoked, exiting from the execution program.
+
+@d ERR_QUEUE -0x1
+
+@<Static...@>=
 static void queue_panic() {
        fprintf(stderr, "Queue is very empty.\n");
-       exit(-1);
+       exit(ERR_QUEUE);
 }
 
+@ To reset the queue, |idx| is zeroed.
+
+@<Static...@>=
 static void queue_reset() {
        idx = 0;
 }
 
 
-@ Output.
+@** Output. The results are writen as a table in markdown format.
+A space is needed between the bars and the content.
 
 @<Write results to a file@>=
 fn = "k-nobel.md";
@@ -293,7 +343,11 @@ for (i=0; i<A; i++) {
 fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
 
-@ @<Free up memory@>=
+@ Memory allocated for the array of pointers |authors| is freed.
+
+@<Free up memory@>=
 for (i=0; i<A; i++)
     free(authors[i]);
 free(authors);
+
+@** Index.
