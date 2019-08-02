@@ -86,6 +86,7 @@ if (fp) {
     fclose(fp);
 } else {
     perror(fn);
+    exit(-2);
 }
 
 @ @<Include...@>=
@@ -175,6 +176,7 @@ if (fp) {
     fclose(fp);
 } else {
     perror(fn);
+    exit(-2);
 }
 
 @ The head of the citations file contains some line that must be ignored.
@@ -280,6 +282,7 @@ if (fp) {
     fclose(fp);
 } else {
     perror(fn);
+    exit(-2);
 }
 
 @ The file with citings has few lines to ignore, basically it's only one
@@ -391,9 +394,10 @@ A space is needed between the bars and the content.
 @<Write results to a file@>=
 fn = "k-nobel.md";
 fp = fopen(fn, "w");
-if (!fp)
+if (!fp) {
    perror(fn);
-
+   exit(-4);
+}
 fprintf(fp, "| Author | h | k |\n");
 fprintf(fp, "|--------|---|---|\n");
 for (i=0; i<A; i++) {
