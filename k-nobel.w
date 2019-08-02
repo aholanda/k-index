@@ -139,9 +139,9 @@ an author is as follows:
 
 \begingroup
 \parindent=2cm
-\item{$\star$} Search for an author's publications;
-\item{$\star$} Click on the link {\it Create Citation Report\/};
-\item{$\star$} The $h$-index appears on the top of the page.
+\item{$\bullet$} Search for an author's publications;
+\item{$\bullet$} Click on the link {\it Create Citation Report\/};
+\item{$\bullet$} The $h$-index appears on the top of the page.
 \endgroup\smallskip
 
 To calculate in batch mode, we downloaded a file with the data to
@@ -159,7 +159,11 @@ a file.
 
 @<Calculate h index@>=
 for (i=0; i<A; i++) {/* for each author */
+    int h=0; /* temporary h-index */
+
     @<Process csv file@>@;
+
+    authors[i]->h = h;
 }
 
 @ @<Process csv file@>=
@@ -169,7 +173,6 @@ strncat(buffer, H_EXT, sizeof(H_EXT));
 fn = buffer;
 fp = fopen(fn, "r");
 if (fp) {
-    int h=1; /* temporary h-index */
     while (fgets(line, sizeof(line), fp) != NULL) {
         @<Parse the line counting citations@>@;
     }
@@ -179,15 +182,18 @@ if (fp) {
     exit(-2);
 }
 
-@ The head of the citations file contains some line that must be ignored.
- These lines contains the words "AUTHOR", "Timespan=All" and "\"Title\""
- in the beginning of the line (ignore double quotes without escape).
- There is also an empty line or a line that starts with a new line special
- command. Passing these rules, the line is a paper record of the author
- and is parsed to count the number of citations.
+@ The head of the citations file contains some line that must be
+ ignored.  These lines contains the words "AUTHOR", "Article Group
+ for:", "Timespan=All" and "\"Title\"" in the beginning of the line
+ (ignore double quotes without escape).  There is also an empty line
+ or a line that starts with a new line special command. Passing these
+ rules, the line is a paper record of the author and is parsed to
+ count the number of citations.
 
 @<Parse the line counting citations@>=
 if (strstr(line, "AUTHOR") != NULL) {
+    continue;
+} else if (strstr(line, "Article Group for:") != NULL) {
     continue;
 } else if (strstr(line, "Timespan=All") != NULL) {
     continue;
@@ -228,8 +234,7 @@ the end of the program.
   }
   if (h > c) { /* found h */
      h--;
-     authors[i]->h = h;
-     break;
+     break; /* stop reading file */
   }
   h++;
 }
