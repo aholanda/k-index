@@ -26,6 +26,6 @@
 | [John D. Bozek](https://publons.com/researcher/2832361/john-d-bozek/) | 56 | 116 |
 | [Sergey I. Bozhevolnyi](https://publons.com/researcher/2784485/sergey-i-bozhevolnyi/) | 65 | 199 |
 | [Sergey L. Bud'ko](https://publons.com/researcher/1300252/sergey-l-budko/) | 21 | 93 |
-| [Vladimit Bulovic,http://onelab.mit.edu/Vladimir-Bulovi%C4%87]() | 52 | 274 |
+| [Vladimit Bulovic,https://onelab.mit.edu/people]() | 52 | 274 |
 | [Paul C. Canfield](https://publons.com/researcher/2517565/paul-c-canfield/) | 90 | 218 |
 | [Federico Capasso](https://www.seas.harvard.edu/directory/capasso) | 73 | 208 |
