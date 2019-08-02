@@ -1,6 +1,14 @@
-@** Introduction.
+@** Introduction. K-NOBEL is a project to try to predict the next
+winners of Nobel prize of physics using $K$-index as parameter of
+comparison. Another parameter, $h$-index, is used to evaluate the
+error threshold, since $h$-index is used by Web of Science as one of
+the parameters to predict the winners of Nobel prize.
+
+The program has the following structure:
 
 @c
+#include <stdio.h>
+#include <stdlib.h>
 @<Include files@>@;
 @<Data structures@>@;
 @<Internal variables@>@;
@@ -23,7 +31,7 @@ Scolar or Publons research id and a link to a page containing more
 information about the citations. Not all authors have research id,
  when this occurs, we assign a number and link to the Web of Science
  page. The data structure for author loads this information, and indeed
-  the author's h-index and K-index.
+  the author's $h$-index and $K$-index.
 
 @d MAX_STR_LEN 256
 
@@ -36,26 +44,35 @@ struct author {
     int k;
 };
 
-@ An array of structs is used to store the authors' information.
+@ An array of structs is used to store the |authors|' information.
+|MAX_LINE_LEN| is the maximum length of each line, the value is very
+high because some papers have so many authors as collaborators.
+ Some variables are made internal (static) and global because the
+ program is so short and the risk to have inconsistencies is low.
+ This kind of programming imposes an attention to details along the
+ program to not forget to restart the counters, for example.
 
-@d MAX_LINE_LEN 1<<12
+@d MAX_LINE_LEN 1<<16
 
 @<Internal...@>=
-static struct author **authors;
+static struct author **authors; /* store authors' info */
 static char *fn, *p; /* file name and generic pointer */
 static FILE *fp; /* file pointer */
-static char buffer[MAX_STR_LEN];
+static char buffer[MAX_STR_LEN]; /* buffer to carry strings */
 static char line[MAX_LINE_LEN]; /* store file lines */
 static int A=0; /* number of authors */
 static int i=0, j=0; /* general-purpose counters */
 
-@ Read authors information.
 
-@<Include...@>=
-#include <stdio.h>
-#include <stdlib.h>
+@ Authors basic information was picked at the Web of Science page,
+more specifically at \hfil\break {\tt
+https://hcr.clarivate.com/\#categories\%3Dphysics} that is the page of
+highly cited authors in physics. They are stored in a file named
+|authors.idx| that is openned to load this information. The global
+counter |A| stores the number of authors and it is used along the
+program.
 
-@ @<Load authors info...@>=
+@<Load authors info...@>=
 fn = "authors.idx";
 fp = fopen(fn, "r");
 if (fp) {
@@ -74,7 +91,19 @@ if (fp) {
 @ @<Include...@>=
 #include <string.h>
 
-@
+@ The fields are separated by semicolon inside |authors.idx|, a record in
+the file is like
+
+{\tt L-000-000;Joe Doe;http//joedoe.joe}
+
+where the first field {\tt L-000-000} is the Research ID or Author
+Identifier, when the author doesn't have an identifier, a custom
+number is assigned. The second field {\tt Joe Doe} is the author name
+and the third field is the link to the page containing information
+about author's publications. A structure is loades with these data and
+a pointer to this structure is passed to the array |authors|.  Lately,
+$h$-index and $K$-index will be calculated and assigned to the proper
+field in the structure.
 
 @d IDX_SEP ";\n"
 
@@ -203,9 +232,9 @@ the end of the program.
   h++;
 }
 
-@** K-index. If an author receives at least K citations, where each
+@** $K$-index. If an author receives at least K citations, where each
 one of these K citations have get at least K citations, then the
-author's K-index was found. On Web of Science homepage, the procedure
+author's $K$-index was found. On Web of Science homepage, the procedure
 to find the K of an author is as follows:
 
 \begingroup
@@ -224,7 +253,7 @@ selecting {\it Fast 5K\/} format that saves the same data, with limit
 of 5.000 records, where each field is separated by one or more tabs
 that is represented by the macro |TSV_SEP|. The files were saved with
 a ".tsv" extension inside |DATA_DIRECTORY|. All authors' files are
-traversed, parsed and K-index is calculated. The results are saved in
+traversed, parsed and $K$-index is calculated. The results are saved in
 a file.
 
 @ @<Calculate K index@>=
