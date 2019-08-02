@@ -102,7 +102,27 @@ while (p != NULL) {
 }
 authors[A-1] = aut;
 
-@* H Index.
+@** $h$-index. The number of papers in decreasing order of citations
+that the number of citations is greater than the paper position is the
+$h$-index.  On Web of Science homepage, the procedure to find the $h$ of
+an author is as follows:
+
+\begingroup
+\parindent=2cm
+\item{$\star$} Search for an author's publications;
+\item{$\star$} Click on the link {\it Create Citation Report\/};
+\item{$\star$} The $h$-index appears on the top of the page.
+\endgroup\smallskip
+
+To calculate in batch mode, we downloaded a file with the data to
+calculate the $h$ by clicking on the button
+\hbox{{\it Export Data: Save To Text File\/}} and
+selecting {\it Records from ...\/} that saves the same data, with limit
+of 500 records, where each field is separated by comma
+that is represented by the macro |CSV_SEP|. The files were saved with
+a ".csv" extension inside |DATA_DIRECTORY|. All authors' files are
+traversed, parsed and $h$-index is calculated. The results are saved in
+a file.
 
 @d DATA_DIRECTORY "data/" /* directory containing all data */
 @d H_EXT ".csv" /* file used to calculate h-index extension */
@@ -128,12 +148,14 @@ if (fp) {
     perror(fn);
 }
 
-@
+@ The head of the citations file contains some line that must be ignored.
+ These lines contains the words "AUTHOR", "Timespan=All" and "\"Title\""
+ in the beginning of the line (ignore double quotes without escape).
+ There is also an empty line or a line that starts with a new line special
+ command. Passing these rules, the line is a paper record of the author
+ and is parsed to count the number of citations.
 
 @<Parse the line counting citations@>=
-@<Ignore the header of citations file@>@;
-
-@ @<Ignore the header of citations file@>=
 if (strstr(line, "AUTHOR") != NULL) {
     continue;
 } else if (strstr(line, "Timespan=All") != NULL) {
@@ -146,7 +168,18 @@ if (strstr(line, "AUTHOR") != NULL) {
     @<Count the citations and check if the h-index was found@>@;
 }
 
-@** h-index.
+@ To count the citations and check if the $h$-index was found, the
+line is tokenized generating fields to be evaluated. The marks to
+divide the line are set to |CSV_SEP| macro. The first |SKIP_FIELDS|
+fields are ignored because contain author's name, paper's name,
+journal's name and volume and information that is not citation.
+Citations start after |SKIP_FIELDS| and are classified by year
+starting in 1900, so the first citations' numbers normally are zero.
+In the citations region, they are accumulated until the last year is
+found. If their summation is lesser than a counter of papers, the
+counter is decremented, and the counter is the $h$-index. This value
+is assigned to a field in a structure called author to be written at
+the end of the program.
 
 @d CSV_SEP ",\"\n"
 @d SKIP_FIELDS 30
@@ -167,12 +200,11 @@ if (strstr(line, "AUTHOR") != NULL) {
      authors[i]->h = h;
      break;
   }
-
   h++;
 }
 
 @** K-index. If an author receives at least K citations, where each
-one of these K citations have get at least K citation, then the
+one of these K citations have get at least K citations, then the
 author's K-index was found. On Web of Science homepage, the procedure
 to find the K of an author is as follows:
 
