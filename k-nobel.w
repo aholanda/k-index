@@ -73,11 +73,15 @@ counter |A| stores the number of authors and it is used along the
 program.
 
 @<Load authors info...@>=
-fn = "authors.idx";
+fn = "data/authors.idx";
 fp = fopen(fn, "r");
 if (fp) {
     while (fgets(line, sizeof(line), fp) != NULL) {
+	if (line[0] == '#') /* comments */
+		continue;
+
         A++;
+
         /* reallocate the array of authors struct with to pointer elements */
         authors = (struct author**)realloc(authors, A*sizeof(struct author*));
         @<Begin to fill authors structure@>@;
@@ -97,8 +101,8 @@ the file is like
 
 {\tt L-000-000;Joe Doe;http//joedoe.joe}
 
-where the first field {\tt L-000-000} is the Research ID or Author
-Identifier, when the author doesn't have an identifier, a custom
+where the first field {\tt L-000-000} is the Research ID or ORCID, 
+when the author doesn't have an identifier, a custom
 number is assigned. The second field {\tt Joe Doe} is the author name
 and the third field is the link to the page containing information
 about author's publications. A structure is loades with these data and
@@ -191,13 +195,16 @@ if (fp) {
  count the number of citations.
 
 @<Parse the line counting citations@>=
-if (strstr(line, "AUTHOR") != NULL) {
+if (strstr(line, "AUTHOR") != NULL ||
+    strstr(line, "IDENTIFICADORES DE AUTOR:") != NULL ) {
     continue;
 } else if (strstr(line, "Article Group for:") != NULL) {
     continue;
-} else if (strstr(line, "Timespan=All") != NULL) {
+} else if (strstr(line, "Timespan=All") != NULL ||
+	   strstr(line, "Tempo estipulado=Todos os anos") != NULL) {
     continue;
-} else if (strstr(line, "\"Title\",") != NULL) {
+} else if (strstr(line, "\"Title\",") != NULL ||
+	   strstr(line, "\"Autores\",") != NULL) {
     continue;
 } else if (line[0] == '\n') { /* start with new line */
     continue;
