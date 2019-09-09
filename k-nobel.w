@@ -101,7 +101,7 @@ the file is like
 
 {\tt L-000-000;Joe Doe;http//joedoe.joe}
 
-where the first field {\tt L-000-000} is the Research ID or ORCID, 
+where the first field {\tt L-000-000} is the Research ID or ORCID,
 when the author doesn't have an identifier, a custom
 number is assigned. The second field {\tt Joe Doe} is the author name
 and the third field is the link to the page containing information
@@ -410,10 +410,11 @@ if (!fp) {
    perror(fn);
    exit(-4);
 }
-fprintf(fp, "| Author | h | k |\n");
-fprintf(fp, "|--------|---|---|\n");
+fprintf(fp, "| N | Author | h | K |\n");
+fprintf(fp, "|---|--------|---|---|\n");
 for (i=0; i<A; i++) {
-    fprintf(fp, "| [%s](%s) | %d | %d |\n",
+    fprintf(fp, "| %d | [%s](%s) | %d | %d |\n",
+    	i+1,
        authors[i]->name, authors[i]->url,
        authors[i]->h, authors[i]->k);
 }
