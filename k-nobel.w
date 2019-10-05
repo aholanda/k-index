@@ -137,6 +137,10 @@ while (p != NULL) {
 }
 authors[A-1] = aut;
 
+@ In all custom files used to parse the data the hash character ''\#''
+is used to indicate that after it the following tokens must be
+interpreted as comments.
+
 @** $h$-index. The number of papers in decreasing order of citations
 that the number of citations is greater than the paper position is the
 $h$-index.  On Web of Science homepage, the procedure to find the $h$ of
@@ -447,7 +451,7 @@ if (!fp) {
    exit(-8);
 }
 fprintf(fp, "\\begin{tabular}{cccc} \\\\ \\hline\n");
-fprintf(fp, "\\bf N & \\bf Author &\\bg h &\\bf K \\\\\ \\hlinen");
+fprintf(fp, "\\bf N & \\bf Author &\\bg h &\\bf K \\\\ \\hline\n");
 for (i=0; i<12; i++) {
     fprintf(fp, " %d & %s & %d & %d \\\\ \n",
        i+1,
