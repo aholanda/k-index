@@ -19,8 +19,9 @@ int main(int argc, char **argv) {
     @<Load authors information@>@;
     @<Calculate h index@>@;
     @<Calculate K index@>@;
+    @<Sort the authors@>@;
     @<Write results to a file@>@;
-
+    @<Write a table with the twelve larger ks in latex format@>@;
     @<Free up memory@>@;
     return 0;
 }
@@ -56,13 +57,13 @@ high because some papers have so many authors as collaborators.
 
 @<Internal...@>=
 static struct author **authors; /* store authors' info */
+static struct author *aut;
 static char *fn, *p; /* file name and generic pointer */
 static FILE *fp; /* file pointer */
 static char buffer[MAX_STR_LEN]; /* buffer to carry strings */
 static char line[MAX_LINE_LEN]; /* store file lines */
 static int A=0; /* number of authors */
 static int i=0, j=0; /* general-purpose counters */
-
 
 @ Authors basic information was picked at the Web of Science page,
 more specifically at \hfil\break {\tt
@@ -113,7 +114,7 @@ field in the structure.
 @d IDX_SEP ";\n"
 
 @<Begin to fill authors structure@>=
-struct author *aut = (struct author*)malloc(sizeof(struct author));
+aut = (struct author*)malloc(sizeof(struct author));
 i = 0; /* information index */
 char *p;
 p = strtok(line, IDX_SEP);
@@ -400,6 +401,20 @@ static void queue_reset() {
 }
 
 
+@** Sorting. The authors are classified in descending order
+according to their $K$-index. The insertion-sort algorithm
+is used to simplify the code and because the number of entries
+is not so large.
+
+@<Sort the authors@>=
+for (i=1; i<A; i++) {
+    aut = authors[i];
+    for (j=i-1; j>=0 && aut->k>authors[j]->k; j--) {
+    	authors[j+1] = authors[j];
+    }
+    authors[j+1] = aut;
+}
+
 @** Output. The results are writen as a table in markdown format.
 A space is needed between the bars and the content.
 
@@ -420,6 +435,30 @@ for (i=0; i<A; i++) {
 }
 fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
+
+@ A table with the twelve larger $K$s to be included in the manuscript
+is written in LaTeX format.
+
+@<Write a table with the twelve larger ks in latex format@>=
+fn = "table.tex";
+fp = fopen(fn, "w");
+if (!fp) {
+   perror(fn);
+   exit(-8);
+}
+fprintf(fp, "\\begin{tabular}{cccc} \\\\ \\hline\n");
+fprintf(fp, "\\bf N & \\bf Author &\\bg h &\\bf K \\\\\ \\hlinen");
+for (i=0; i<12; i++) {
+    fprintf(fp, " %d & %s & %d & %d \\\\ \n",
+       i+1,
+       authors[i]->name,
+       authors[i]->h,
+       authors[i]->k);
+}
+fprintf(fp, "\\hline\\end{tabular} \n");
+fclose(fp);
+fprintf(stderr, "* Wrote \"%s\"\n", fn);
+
 
 @ Memory allocated for the array of pointers |authors| is freed.
 
