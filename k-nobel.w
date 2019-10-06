@@ -16,6 +16,7 @@ The program has the following structure:
 
 @ @c
 int main(int argc, char **argv) {
+    @<Load the ids of authors laureated with Nobel@>@;
     @<Load authors information@>@;
     @<Calculate h index@>@;
     @<Calculate K index@>@;
@@ -24,6 +25,26 @@ int main(int argc, char **argv) {
     @<Write a table with the twelve larger ks in latex format@>@;
     @<Free up memory@>@;
     return 0;
+}
+
+@ Some internal functions are defined to embed repetitive tasks like check null
+pointers and print error messages.
+
+@<Static...@>=
+static FILE *Fopen(char *filename, char *mode) {
+       FILE *f;
+
+       f = fopen(filename, mode);
+       if (!f) {
+       	  fprintf(stderr, "Could not open %s\n", filename);
+	  exit(-1);
+       }
+       return f;
+}
+
+static void Fclose(FILE *f) {
+       if (f)
+       	  fclose(f);
 }
 
 @** Authors. Information about research authors were stored into
@@ -75,27 +96,28 @@ program.
 
 @<Load authors info...@>=
 fn = "data/authors.idx";
-fp = fopen(fn, "r");
-if (fp) {
-    while (fgets(line, sizeof(line), fp) != NULL) {
-	if (line[0] == '#') /* comments */
-		continue;
+fp = Fopen(fn, "r");
+while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
+      if (is_comment(line))
+      	 continue;
 
-        A++;
+      /* reallocate the array of authors struct with to pointer elements */
+      authors = (struct author**)realloc(authors, get_no_authors()*sizeof(struct author*));
+      @<Begin to fill authors structure@>@;
 
-        /* reallocate the array of authors struct with to pointer elements */
-        authors = (struct author**)realloc(authors, A*sizeof(struct author*));
-        @<Begin to fill authors structure@>@;
+}
+Fclose(fp);
 
-    }
-    fclose(fp);
-} else {
-    perror(fn);
-    exit(-2);
+@ The number of research authors is calculated by adding one to global
+variable |A| that is the next free array index.
+
+@<Static...@>=
+static int get_no_authors() {
+       return A+1;
 }
 
 @ @<Include...@>=
-#include <string.h>
+#include <string.h> /* strtok() */
 
 @ The fields are separated by semicolon inside |authors.idx|, a record in
 the file is like
@@ -135,11 +157,86 @@ while (p != NULL) {
     p = strtok(NULL, IDX_SEP);
     i++;
 }
-authors[A-1] = aut;
+
+if (!is_nobel_laureated(aut)) {
+   authors[A++] = aut;
+}
 
 @ In all custom files used to parse the data the hash character ''\#''
 is used to indicate that after it the following tokens must be
 interpreted as comments.
+
+@<Static...@>=
+int is_comment(char *line) {
+    if (!line)
+       goto exit_is_comment;
+
+      if (line[0] == '#')
+		return 1;
+
+    exit_is_comment:
+      return 0;
+}
+
+@** Nobel winners. We have to discard researchers that already won the
+prize. To this end,
+
+@  Up to 2018, there was 935 Laureates that awarded Nobel
+prize.  We put more chairs in the room to accomodate future
+Laureates. A simple array is used to store the ids and a linear search
+is performed. As the number of winners is not high, this simple
+scheme, even though not so efficient, is used to avoid complexities.
+
+@d N_LAUREATES 935
+@d MORE_ROOM 128
+
+@<Internal...@>=
+static struct arr {
+       char array[N_LAUREATES+MORE_ROOM][MAX_STR_LEN];
+       int n; /* number of elements used */
+} list;
+
+@ A file |NOBEL_FN| with the identification number (id) of the Nobel
+researchers is created to store the Nobel-laureated researchers.
+
+/* file name with ids of Nobel-laureated researchers */
+@d NOBEL_FN "winners.dat"
+
+@<Load the ids of authors laureated with Nobel@>=
+fp = Fopen(NOBEL_FN, "r");
+while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
+      if (is_comment(line))
+      	 continue;
+
+      /* Remove new line */
+      line[strcspn(line, "\r\n")] = 0;
+
+      @<Insert research id in the list@>@;
+}
+Fclose(fp);
+
+@ Each new laureated id is inserted in the array list and the numer of
+elements in the list is incremented. No overflow checking is done.
+
+@<Insert research id in the list@>=
+strncpy(list.array[list.n++], line, sizeof(line));
+
+@ The function |is_nobel_laureated| check in the laureated list with
+ids if the author |a| id is in the list. The string comparison does
+not take into account if an id is prefix of another one because this
+is very unlikely to occur.
+
+@<Static...@>=
+static int is_nobel_laureated(struct author *a) {
+       int i;
+       char *id = a->researchid;
+
+       for (i=0; i<list.n; i++) {
+       	   if (strncmp(list.array[i], id, sizeof(id))==0)
+	      return 1;
+       }
+       return 0;
+}
 
 @** $h$-index. The number of papers in decreasing order of citations
 that the number of citations is greater than the paper position is the
