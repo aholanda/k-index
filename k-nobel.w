@@ -178,21 +178,20 @@ int is_comment(char *line) {
       return 0;
 }
 
-@** Nobel winners. We have to discard researchers that already won the
-prize. To this end,
+@** Nobel laureated researchers. We have to discard researchers that
+already was laureated with the prize. Up to 2018, there was 935
+Laureates that awarded Nobel prize. We put more chairs in the room to
+accomodate future laureated researchers. A simple array is used to
+store the ids and a linear search is performed. As the number of
+winners is not high, this simple scheme, even though not so efficient,
+is used to avoid complexities.
 
-@  Up to 2018, there was 935 Laureates that awarded Nobel
-prize.  We put more chairs in the room to accomodate future
-Laureates. A simple array is used to store the ids and a linear search
-is performed. As the number of winners is not high, this simple
-scheme, even though not so efficient, is used to avoid complexities.
-
-@d N_LAUREATES 935
+@d N_LAUREATED 935
 @d MORE_ROOM 128
 
 @<Internal...@>=
 static struct arr {
-       char array[N_LAUREATES+MORE_ROOM][MAX_STR_LEN];
+       char array[N_LAUREATED+MORE_ROOM][MAX_STR_LEN];
        int n; /* number of elements used */
 } list;
 
@@ -200,7 +199,7 @@ static struct arr {
 researchers is created to store the Nobel-laureated researchers.
 
 /* file name with ids of Nobel-laureated researchers */
-@d NOBEL_FN "winners.dat"
+@d NOBEL_FN "laureated.dat"
 
 @<Load the ids of authors laureated with Nobel@>=
 fp = Fopen(NOBEL_FN, "r");
