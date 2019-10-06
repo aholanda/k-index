@@ -549,13 +549,13 @@ if (!fp) {
 fprintf(fp, "\\begin{tabular}{cccc} \\\\ \\hline\n");
 fprintf(fp, "\\bf N & \\bf Author &\\bg h &\\bf K \\\\ \\hline\n");
 for (i=0; i<12; i++) {
-    fprintf(fp, " %d & %s & %d & %d \\\\ \n",
+    fprintf(fp, " %d & %s & %d & %d \\\\\n",
        i+1,
        authors[i]->name,
        authors[i]->h,
        authors[i]->k);
 }
-fprintf(fp, "\\hline\\end{tabular} \n");
+fprintf(fp, "\\hline\\end{tabular}\n");
 fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
 
