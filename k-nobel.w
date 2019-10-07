@@ -1,8 +1,8 @@
-@** Introduction. K-NOBEL is a project to try to predict the next
-winners of Nobel prize of physics using $K$-index as parameter of
-comparison. Another parameter, $h$-index, is used to evaluate the
+@** Introduction. K-NOBEL is a project that tries to predict the next
+winners of Nobel Prize in Physics using $K$-index as parameter of
+comparison. Also uses $h$-index parameter to evaluate the
 error threshold, since $h$-index is used by Web of Science as one of
-the parameters to predict the winners of Nobel prize.
+the parameters to predict the winners of Nobel Prize.
 
 The program has the following structure:
 
@@ -47,12 +47,12 @@ static void Fclose(FILE *f) {
        	  fclose(f);
 }
 
-@** Authors. Information about research authors were stored into
-{\tt index.csv} file. They consist into name, Web of Science or Google
-Scolar or Publons research id and a link to a page containing more
-information about the citations. Not all authors have research id,
- when this occurs, we assign a number and link to the Web of Science
- page. The data structure for author loads this information, and indeed
+@** Authors. The information about the research authors were stored into a
+{\tt index.csv} file. This file contain: name, Web of Science, Google
+Schoolar or Publons research id and a link to a page containing more
+information about the citations. But not all authors have research id,
+ when this happens, we assign a number and link to the Web of Science
+ page automatically. The data structure for author loads this information, and indeed
   the author's $h$-index and $K$-index.
 
 @d MAX_STR_LEN 256
@@ -86,10 +86,10 @@ static char line[MAX_LINE_LEN]; /* store file lines */
 static int A=0; /* number of authors */
 static int i=0, j=0; /* general-purpose counters */
 
-@ Authors basic information was picked at the Web of Science page,
+@ Authors basic information was picked from the Web of Science page,
 more specifically at \hfil\break {\tt
 https://hcr.clarivate.com/\#categories\%3Dphysics} that is the page of
-highly cited authors in physics. They are stored in a file named
+most cited authors in physics. They are stored in a file named
 |authors.idx| that is openned to load this information. The global
 counter |A| stores the number of authors and it is used along the
 program.
@@ -120,15 +120,15 @@ static int get_no_authors() {
 #include <string.h> /* strtok() */
 
 @ The fields are separated by semicolon inside |authors.idx|, a record in
-the file is like
+the file looks like
 
 {\tt L-000-000;Joe Doe;http//joedoe.joe}
 
 where the first field {\tt L-000-000} is the Research ID or ORCID,
 when the author doesn't have an identifier, a custom
 number is assigned. The second field {\tt Joe Doe} is the author name
-and the third field is the link to the page containing information
-about author's publications. A structure is loades with these data and
+and the third field is the link to the page that contains information
+about author's publications. A structure is loaded with these data and
 a pointer to this structure is passed to the array |authors|.  Lately,
 $h$-index and $K$-index will be calculated and assigned to the proper
 field in the structure.
@@ -162,7 +162,7 @@ if (!is_nobel_laureated(aut)) {
    authors[A++] = aut;
 }
 
-@ In all custom files used to parse the data the hash character ''\#''
+@ In all custom files used to parse the data, the hash character ''\#''
 is used to indicate that after it the following tokens must be
 interpreted as comments.
 
@@ -179,10 +179,10 @@ int is_comment(char *line) {
 }
 
 @** Nobel laureated researchers. We have to discard researchers that
-already was laureated with the prize. Up to 2018, there was 935
-Laureates that awarded Nobel prize. We put more chairs in the room to
+already was laureated with the Nobel Prize. Up to 2018, there was 935
+laureates that awarded Nobel Prize. We put more chairs in the room to
 accomodate future laureated researchers. A simple array is used to
-store the ids and a linear search is performed. As the number of
+store the IDs and a linear search is performed. As the number of
 winners is not high, this simple scheme, even though not so efficient,
 is used to avoid complexities.
 
@@ -221,7 +221,7 @@ elements in the list is incremented. No overflow checking is done.
 strncpy(list.array[list.n++], line, sizeof(line));
 
 @ The function |is_nobel_laureated| check in the laureated list with
-ids if the author |a| id is in the list. The string comparison does
+IDs if the author |a| id is in the list. The string comparison does
 not take into account if an id is prefix of another one because this
 is very unlikely to occur.
 
@@ -237,7 +237,7 @@ static int is_nobel_laureated(struct author *a) {
        return 0;
 }
 
-@** $h$-index. The number of papers in decreasing order of citations
+@** $h$-index. The number of papers is in decreasing order of citations
 that the number of citations is greater than the paper position is the
 $h$-index.  On Web of Science homepage, the procedure to find the $h$ of
 an author is as follows:
@@ -287,7 +287,7 @@ if (fp) {
     exit(-2);
 }
 
-@ The head of the citations file contains some line that must be
+@ The head of the citations file contains some lines that must be
  ignored.  These lines contains the words "AUTHOR", "Article Group
  for:", "Timespan=All" and "\"Title\"" in the beginning of the line
  (ignore double quotes without escape).  There is also an empty line
@@ -313,7 +313,7 @@ if (strstr(line, "AUTHOR") != NULL ||
     @<Count the citations and check if the h-index was found@>@;
 }
 
-@ To count the citations and check if the $h$-index was found, the
+@ To count the citations and check if the $h$-index exists, the
 line is tokenized generating fields to be evaluated. The marks to
 divide the line are set to |CSV_SEP| macro. The first |SKIP_FIELDS|
 fields are ignored because contain author's name, paper's name,
@@ -350,7 +350,7 @@ the end of the program.
 @** $K$-index. If an author receives at least K citations, where each
 one of these K citations have get at least K citations, then the
 author's $K$-index was found. On Web of Science homepage, the procedure
-to find the K of an author is as follows:
+to find the K of an author looks like below:
 
 \begingroup
 \parindent=2cm
@@ -398,7 +398,7 @@ if (fp) {
     exit(-2);
 }
 
-@ The file with citings has few lines to ignore, basically it's only one
+@ The file with citings has few lines to ignore, basically it is only one
 that begins with "PT $\backslash$t" (ignore double quotes). A line that begins
 with new line command ignored too, but only for caution.
 
@@ -411,7 +411,7 @@ if (strstr(line, "PT\t") != NULL) {
     @<Find the citings and check if the K-index was found@>@;
 }
 
-@ |K_SKIP| represents the fields to be skiped before {\it Times Cited\/}
+@ |K_SKIP| represents the fields to be skipped before {\it Times Cited\/}
 value is reached. Its value is not fixed and for this reason it was
 implemented a tricky way to get the {\it Times Cited\/} value: after
 |K_SKIP| is passed, each field is accumulated in a queue and when the
@@ -493,7 +493,7 @@ static void queue_panic() {
        exit(ERR_QUEUE);
 }
 
-@ To reset the queue, |idx| is zeroed.
+@ To reset the queue, |idx| is reseted to zero.
 
 @<Static...@>=
 static void queue_reset() {
@@ -503,7 +503,7 @@ static void queue_reset() {
 
 @** Sorting. The authors are classified in descending order
 according to their $K$-index. The insertion-sort algorithm
-is used to simplify the code and because the number of entries
+is used to simplify the code and according to the number of entries
 is not so large.
 
 @<Sort the authors@>=
@@ -515,7 +515,7 @@ for (i=1; i<A; i++) {
     authors[j+1] = aut;
 }
 
-@** Output. The results are writen as a table in markdown format.
+@** Output. The results are written as a table in markdown format.
 A space is needed between the bars and the content.
 
 @<Write results to a file@>=
