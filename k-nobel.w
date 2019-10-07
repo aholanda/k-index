@@ -16,6 +16,7 @@ The program has the following structure:
 
 @ @c
 int main(int argc, char **argv) {
+    @<Parse program arguments@>@;
     @<Load the ids of authors laureated with Nobel@>@;
     @<Load authors information@>@;
     @<Calculate h index@>@;
@@ -46,6 +47,23 @@ static void Fclose(FILE *f) {
        if (f)
        	  fclose(f);
 }
+
+@ The only flag provided is {\tt -v} to print the existing comments
+inside data files and any other useful information to the user.
+
+@d VERBOSE_FLAG  "-v"
+
+@<Parse program arguments@>=
+if (argc==2 && !strncmp(argv[1], VERBOSE_FLAG, 3)) {
+   verbose = 1;
+}
+
+@ The |verbose| variable stores if the output of the program is
+extended.  The default behavior is to write to output few information
+about the generated files.
+
+@<Internal...@>=
+static int verbose;
 
 @** Authors. Information about research authors were stored into
 {\tt index.csv} file. They consist into name, Web of Science or Google
@@ -95,7 +113,7 @@ counter |A| stores the number of authors and it is used along the
 program.
 
 @<Load authors info...@>=
-fn = "data/authors.idx";
+fn = "authors.idx";
 fp = Fopen(fn, "r");
 while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
       if (is_comment(line))
@@ -171,8 +189,12 @@ int is_comment(char *line) {
     if (!line)
        goto exit_is_comment;
 
-      if (line[0] == '#')
-		return 1;
+      if (line[0] == '#') {
+            if (verbose)
+      	       printf("%s", line);
+
+	    return 1;
+     }
 
     exit_is_comment:
       return 0;
@@ -560,9 +582,14 @@ fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
 
 
-@ Memory allocated for the array of pointers |authors| is freed.
+@ Memory allocated for the array of pointers |authors| is freed.  As
+the memory deallocation is the last task to be executed, a simple
+usage notification is appended before the task.
 
 @<Free up memory@>=
+if (!verbose)
+   fprintf(stderr, "\ninfo: run \"%s -v\" to print more information.\n", argv[0]);
+
 for (i=0; i<A; i++)
     free(authors[i]);
 free(authors);
