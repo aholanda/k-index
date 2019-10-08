@@ -3,35 +3,35 @@
 # semicolon ';'. Anything after hash '#' is considered comment.
 L-9825-2016;Jong-Hyun Ahn;https://publons.com/researcher/2228321/jong-hyun-ahn/
 E-6889-2014;Javier Aizpurua;https://publons.com/researcher/1331876/javier-aizpurua/
-1;Pulickel Ajayan;http://bit.ly/2ZmkAhq
+e3496b8d62774ab16a5a6a83dc115ca4;Pulickel Ajayan;http://bit.ly/2ZmkAhq
 N-8863-2015;Paul Alivisatos;https://publons.com/researcher/2342530/paul-alivisatos/
-2;James Analytis;http://bit.ly/2ZiGemZ
+caf8b3a0ca8e61b5d1b3b0bcd7715384;James Analytis;http://bit.ly/2ZiGemZ
 C-4098-2017;Markus Aspelmeyer;https://publons.com/researcher/2153264/markus-aspelmeyer/
 H-2823-2014;Harry A. Atwater;https://publons.com/researcher/2517449/harry-a-atwater/
-3;Richard D. Averitt;https://scholar.google.com/citations?user=FdXKTjsAAAAJ&hl=en&oi=ao
-4;Phaedon Avouris;http://bit.ly/2YB8JuJ
+733b344b42b5685b5d967e1c5ba69b2e;Richard D. Averitt;https://scholar.google.com/citations?user=FdXKTjsAAAAJ&hl=en&oi=ao
+3a1d01fedf4743d9262cdbf2e32eda35;Phaedon Avouris;http://bit.ly/2YB8JuJ
 F-9230-2011;Alexander A. Balandin;https://publons.com/researcher/2777132/alexander-a-balandin/
-5;Leon Balents;http://bit.ly/2OzIRzP
-6;Arun Bansil;http://bit.ly/2KkTDEF
+b8ad28136d0cdb0980e1d35edfd0b213;Leon Balents;http://bit.ly/2OzIRzP
+e73e8fb70d96e2da1246c1581ca6e8ba;Arun Bansil;http://bit.ly/2KkTDEF
 B-2453-2012;Wenzhong Bao;https://publons.com/researcher/1404245/wenzhong-bao/
 0000-0002-0972-1715;Zhenan Bao;https://publons.com/researcher/1388542/zhenan-bao/
-7;Dimitri N. Basov;https://infrared.cni.columbia.edu/basov/
+9371a269d06a3d6aa2c439e6305556e6;Dimitri N. Basov;https://infrared.cni.columbia.edu/basov/
 0000-0003-4710-1768;Laura Baudis;http://orcid.org/0000-0003-4710-1768
 B-7424-2008;Carlo W.J. Beenakker;https://publons.com/researcher/2885743/carlo-wj-beenakker/
-8;Berger Claire;https://www.physics.gatech.edu/user/claire-berger
-9;B. Andrei Bernevig;https://phy.princeton.edu/people/bogdan-bernevig
+7bec63b71e3560d3516568caebd6ddbf;Berger Claire;https://www.physics.gatech.edu/user/claire-berger
+e6cd4a7c8fa961ebf8076483e2e54a39;B. Andrei Bernevig;https://phy.princeton.edu/people/bogdan-bernevig
 E-8556-2010;Peter Blake;https://publons.com/researcher/2832922/peter-blake/
 G-3174-2010;Immanuel Bloch;https://publons.com/researcher/2822764/immanuel-bloch/
-10;D.A. Bonn;https://www.phas.ubc.ca/users/douglas-bonn
-11;Christoph Bostedt;http://bit.ly/2YmFX5K
+3c2e6eb84dd675a8a1dd03eb5de54431;D.A. Bonn;https://www.phas.ubc.ca/users/douglas-bonn
+35fffc267b7a392328fc52bb63fb7935;Christoph Bostedt;http://bit.ly/2YmFX5K
 E-9260-2010;John D. Bozek;https://publons.com/researcher/2832361/john-d-bozek/
 E-9423-2011;Sergey I. Bozhevolnyi;https://publons.com/researcher/2784485/sergey-i-bozhevolnyi/
 A-7481-2009;Sergey L. Bud'ko;https://publons.com/researcher/1300252/sergey-l-budko/
-12;Vladimit Bulovic;https://onelab.mit.edu/people
+1a911f21bac42104f0be155d45a2c83b;Vladimit Bulovic;https://onelab.mit.edu/people
 H-2698-2014;Paul C. Canfield;https://publons.com/researcher/2517565/paul-c-canfield/
-13;Federico Capasso;https://www.seas.harvard.edu/directory/capasso
+88d608d33e544af5f8bf067ddc0537d7;Federico Capasso;https://www.seas.harvard.edu/directory/capasso
 C-8363-2014;Antonio H. Castro Neto;https://publons.com/researcher/2552790/antonio-h-castro-neto/;86
-14;R. J. Cava;https://chemistry.princeton.edu/faculty;60
+579acb3e297fb248b509b24a1424fc02;R. J. Cava;https://chemistry.princeton.edu/faculty;60
 J-1325-2014;Gang Chen;https://publons.com/researcher/2504319/gang-chen/;104
 C-1821-2011;Jang Wook Choi;https://publons.com/researcher/1431810/jang-wook-choi/;61
 # NOT_FOUND_IN_WOS
