@@ -108,11 +108,13 @@ static char line[MAX_LINE_LEN]; /* store file lines */
 static int A=0; /* store the number of authors */
 static int i=0, j=0; /* general-purpose counters */
 
-@ Basic information of researchers was gathered at the Web of Science
-page, more specifically at \hfil\break {\tt
+@ Authors basic information was picked from the Web of Science page,
+more specifically at \hfil\break {\tt
 https://hcr.clarivate.com/\#categories\%3Dphysics} that is the page of
-highly cited authors in Physics. The global counter |A| stores the
-number of authors and it is used along the program.
+most cited authors in physics. They are stored in a file named
+|authors.idx| that is openned to load this information. The global
+counter |A| stores the number of authors and it is used along the
+program.
 
 @<Load authors info...@>=
 fp = Fopen(AUTHORS_DATA_FN, "r");
@@ -138,18 +140,19 @@ static int get_no_authors() {
 @ @<Include...@>=
 #include <string.h> /* strtok() */
 
-@ The fields are separated by semicolon, a record in the file is like
+@ The fields are separated by semicolon inside |authors.idx|, a record in
+the file looks like
 
 {\tt L-000-000;Joe Doe;http//joedoe.joe}
 
-where the first field {\tt L-000-000} is the Researcher ID or ORCID,
-when the author doesn't have an identifier, a custom number is
-assigned using MD5 algorithm applied to the author name. The second
-field ({\tt Joe Doe}) is the author name and the third field is the
-link to the page containing information about author's publications. A
-structure is loaded with these data and a pointer to this structure is
-passed to the array |authors|.  Then, $h$-index and $K$-index will be
-calculated and assigned to the proper field in the structure.
+where the first field {\tt L-000-000} is the Research ID or ORCID,
+when the author doesn't have an identifier, a custom
+number is assigned. The second field {\tt Joe Doe} is the author name
+and the third field is the link to the page that contains information
+about author's publications. A structure is loaded with these data and
+a pointer to this structure is passed to the array |authors|.  Lately,
+$h$-index and $K$-index will be calculated and assigned to the proper
+field in the structure.
 
 @d IDX_SEP ";\n"
 
@@ -180,8 +183,9 @@ if (!is_nobel_laureate(aut)) {
    authors[A++] = aut;
 }
 
-@ In all data files, the hash character ''\#'' is used to indicate
-that after it, the following tokens must be interpreted as comments.
+@ In all custom files used to parse the data, the hash character ''\#''
+is used to indicate that after it the following tokens must be
+interpreted as comments.
 
 @<Static...@>=
 int is_comment(char *line) {
@@ -199,13 +203,13 @@ int is_comment(char *line) {
       return 0;
 }
 
-@** Nobel Laureates. We have to discard researchers that already was
-awarded with the prize. Up to 2018, there were 935 Laureates that
-awarded Nobel prize. We put more chairs in the room to accommodate
-future Laureates. A simple array is used to store the ids and to find
-them, a linear search is performed in the array; the authors are not
-sorted. As the number of Laureates is not high, this simple scheme, even
-though not so efficient, avoids complexities.
+@** Nobel Laureates. We have to discard researchers that
+already was laureated with the Nobel Prize. Up to 2018, there was 935
+laureates that awarded Nobel Prize. We put more chairs in the room to
+accomodate future laureated researchers. A simple array is used to
+store the IDs and a linear search is performed. As the number of
+winners is not high, this simple scheme, even though not so efficient,
+is used to avoid complexities.
 
 @d N_LAUREATES 935
 @d MORE_ROOM 128
@@ -241,10 +245,10 @@ elements in the list is incremented. No overflow checking is done.
 @<Insert research id in the list@>=
 strncpy(list.array[list.n++], line, sizeof(line));
 
-@ The function |is_nobel_laureate| check in the Nobel list with ids if
-the id of author |a| is in that list. The string comparison does not
-take into account if an id is a prefix of another one because this is
-very unlikely to occur.
+@ The function |is_nobel_laureate| check in the laureated list with
+IDs if the author |a| id is in the list. The string comparison does
+not take into account if an id is prefix of another one because this
+is very unlikely to occur.
 
 @<Static...@>=
 static int is_nobel_laureate(struct author *a) {
@@ -258,10 +262,10 @@ static int is_nobel_laureate(struct author *a) {
        return 0;
 }
 
-@** $h$-index. The $h$-index is the number of papers, in decreasing
-order of citations, that the number of citations is greater than the
-paper position.  At the Web of Science homepage, the procedure to find
-the $h$ of an author is as follows:
+@** $h$-index. The number of papers is in decreasing order of citations
+that the number of citations is greater than the paper position is the
+$h$-index.  On Web of Science homepage, the procedure to find the $h$ of
+an author is as follows:
 
 \begingroup
 \parindent=2cm
@@ -331,8 +335,8 @@ if (strstr(line, "AUTHOR") != NULL ||
     @<Count the citations and check if the h-index was found@>@;
 }
 
-@ To count the citations and check if the $h$-index was found, the
-line is tokenized generating the fields to be evaluated. The marks to
+@ To count the citations and check if the $h$-index exists, the
+line is tokenized generating fields to be evaluated. The marks to
 divide the line are set to |CSV_SEP| macro. The first |SKIP_FIELDS|
 fields are ignored because contain author's name, paper's name,
 journal's name and volume and information that is not citation.
@@ -368,7 +372,7 @@ of the program.
 @** $K$-index. If an author receives at least K citations, where each
 one of these K citations have get at least K citations, then the
 author's $K$-index was found. On Web of Science homepage, the procedure
-to find the K of an author is as follows:
+to find the K of an author looks like below:
 
 \begingroup
 \parindent=2cm
@@ -415,7 +419,7 @@ if (fp) {
     exit(-2);
 }
 
-@ The file with citings has few lines to ignore, basically it's only one
+@ The file with citings has few lines to ignore, basically it is only one
 that begins with "PT $\backslash$t" (ignore double quotes). A line that begins
 with new line command ignored too, but only for caution.
 
@@ -428,14 +432,13 @@ if (strstr(line, "PT\t") != NULL) {
     @<Find the citings and check if the K-index was found@>@;
 }
 
-@ |K_SKIP| represents the fields to be skipped before {\it Times
-Cited\/} value is reached. Its value is not fixed and for this reason
-it was implemented a tricky way to get the {\it Times Cited\/} value
-described as follows: after |K_SKIP| fields are passed, each field is
-accumulated in a queue and when the end of the record is reached, the
-queue is dequeued three times to get the {\it Times Cited\/}
-value. This position offset of {\it Times Cited\/} value from the end
-is fixed for all files.
+@ |K_SKIP| represents the fields to be skipped before {\it Times Cited\/}
+value is reached. Its value is not fixed and for this reason it was
+implemented a tricky way to get the {\it Times Cited\/} value: after
+|K_SKIP| is passed, each field is accumulated in a queue and when the
+end of the record is reached, the queue is dequeue three times to get
+the {\it Times Cited\/} value. This position offset of {\it Times
+Cited\/} value from the end is fixed for all files.
 
 @d TSV_SEP "\t"
 @d K_SKIP 7 /* number of fields that can be skipped with safety */
@@ -511,7 +514,7 @@ static void queue_panic() {
        exit(ERR_QUEUE);
 }
 
-@ To reset the queue, |idx| is zeroed.
+@ To reset the queue, |idx| is reseted to zero.
 
 @<Static...@>=
 static void queue_reset() {
@@ -521,7 +524,7 @@ static void queue_reset() {
 
 @** Sorting. The authors are classified in descending order
 according to their $K$-index. The insertion-sort algorithm
-is used to simplify the code and because the number of entries
+is used to simplify the code and according to the number of entries
 is not so large.
 
 @<Sort the authors@>=
@@ -533,7 +536,7 @@ for (i=1; i<A; i++) {
     authors[j+1] = aut;
 }
 
-@** Output. The results are writen in a table using markdown format.
+@** Output. The results are written as a table in markdown format.
 A space is needed between the bars and the content.
 
 @<Write results to a file@>=
