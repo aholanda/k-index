@@ -1,8 +1,8 @@
-@** Introduction. K-NOBEL is a project that tries to predict the next
-winners of Nobel Prize in Physics using $K$-index as parameter of
-comparison. Also uses $h$-index parameter to evaluate the
+@** Introduction. K-NOBEL is a project to try to predict the future
+Laureates of Nobel prize of Physics using $K$-index to rank the
+researchers. Another parameter, $h$-index, is used to evaluate the
 error threshold, since $h$-index is used by Web of Science as one of
-the parameters to predict the winners of Nobel Prize.
+the indices to predict the Laureates of Nobel prize.
 
 The program has the following structure:
 
@@ -16,7 +16,8 @@ The program has the following structure:
 
 @ @c
 int main(int argc, char **argv) {
-    @<Load the ids of authors laureated with Nobel@>@;
+    @<Parse program arguments@>@;
+    @<Load the ids of Nobel Laureates@>@;
     @<Load authors information@>@;
     @<Calculate h index@>@;
     @<Calculate K index@>@;
@@ -47,14 +48,35 @@ static void Fclose(FILE *f) {
        	  fclose(f);
 }
 
-@** Authors. The information about the research authors were stored into a
-{\tt index.csv} file. This file contain: name, Web of Science, Google
-Schoolar or Publons research id and a link to a page containing more
-information about the citations. But not all authors have research id,
- when this happens, we assign a number and link to the Web of Science
- page automatically. The data structure for author loads this information, and indeed
-  the author's $h$-index and $K$-index.
+@ The only flag provided is {\tt -v} to print the existing comments
+inside data files and any other useful information to the user. Any
+other parameter entered to the program is ignored and causes the
+program execution without any parameters at all.
 
+@d VERBOSE_FLAG  "-v"
+
+@<Parse program arguments@>=
+if (argc==2 && !strncmp(argv[1], VERBOSE_FLAG, 3)) {
+   verbose = 1;
+}
+
+@ The |verbose| Boolean variable marks if the output of the program is
+extended with the comments inside data files. The default behavior is
+to write to the output the name the generated files.
+
+@<Internal...@>=
+static int verbose;
+
+@** Authors. The macro |AUTHORS_DATA_FN| is set with the file name
+ that contains information about researchers (authors). Each line of
+ the file has the name, Web of Science or Google Scholar or Publons
+ research id and a link to a page containing more information about
+ the citations. Not all authors have researcher id, when this occurs, we
+ assign a number and link to the Web of Science page. The data
+ structure for author loads this information, and indeed the author's
+ $h$-index and $K$-index.
+
+@d AUTHORS_DATA_FN "authors.idx"
 @d MAX_STR_LEN 256
 
 @<Data structures@>=
@@ -66,24 +88,24 @@ struct author {
     int k;
 };
 
-@ An array of structs is used to store the |authors|' information.
+@ An array of structures is used to store the |authors|' information.
 |MAX_LINE_LEN| is the maximum length of each line, the value is very
-high because some papers have so many authors as collaborators.
- Some variables are made internal (static) and global because the
- program is so short and the risk to have inconsistencies is low.
- This kind of programming imposes an attention to details along the
- program to not forget to restart the counters, for example.
+high because some papers have too many authors. Some variables are
+made internal (static) and global because the program is so short and
+the risk to have inconsistencies is low.  This kind of programming
+technique imposes an attention to details along the program, as an example,
+ the counters must be zeroed each time of using.
 
 @d MAX_LINE_LEN 1<<16
 
 @<Internal...@>=
 static struct author **authors; /* store authors' info */
-static struct author *aut;
+static struct author *aut; /* temporary variable */
 static char *fn, *p; /* file name and generic pointer */
 static FILE *fp; /* file pointer */
-static char buffer[MAX_STR_LEN]; /* buffer to carry strings */
+static char buffer[MAX_STR_LEN]; /* buffer to store strings */
 static char line[MAX_LINE_LEN]; /* store file lines */
-static int A=0; /* number of authors */
+static int A=0; /* store the number of authors */
 static int i=0, j=0; /* general-purpose counters */
 
 @ Authors basic information was picked from the Web of Science page,
@@ -95,8 +117,7 @@ counter |A| stores the number of authors and it is used along the
 program.
 
 @<Load authors info...@>=
-fn = "data/authors.idx";
-fp = Fopen(fn, "r");
+fp = Fopen(AUTHORS_DATA_FN, "r");
 while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
       if (is_comment(line))
       	 continue;
@@ -158,7 +179,7 @@ while (p != NULL) {
     i++;
 }
 
-if (!is_nobel_laureated(aut)) {
+if (!is_nobel_laureate(aut)) {
    authors[A++] = aut;
 }
 
@@ -171,14 +192,18 @@ int is_comment(char *line) {
     if (!line)
        goto exit_is_comment;
 
-      if (line[0] == '#')
-		return 1;
+      if (line[0] == '#') {
+            if (verbose)
+      	       printf("%s", line);
+
+	    return 1;
+     }
 
     exit_is_comment:
       return 0;
 }
 
-@** Nobel laureated researchers. We have to discard researchers that
+@** Nobel Laureates. We have to discard researchers that
 already was laureated with the Nobel Prize. Up to 2018, there was 935
 laureates that awarded Nobel Prize. We put more chairs in the room to
 accomodate future laureated researchers. A simple array is used to
@@ -186,47 +211,47 @@ store the IDs and a linear search is performed. As the number of
 winners is not high, this simple scheme, even though not so efficient,
 is used to avoid complexities.
 
-@d N_LAUREATED 935
+@d N_LAUREATES 935
 @d MORE_ROOM 128
 
 @<Internal...@>=
 static struct arr {
-       char array[N_LAUREATED+MORE_ROOM][MAX_STR_LEN];
+       char array[N_LAUREATES+MORE_ROOM][MAX_STR_LEN];
        int n; /* number of elements used */
 } list;
 
 @ A file |NOBEL_FN| with the identification number (id) of the Nobel
-researchers is created to store the Nobel-laureated researchers.
+Laureates is used to check if the researcher already win the prize.
 
-/* file name with ids of Nobel-laureated researchers */
-@d NOBEL_FN "laureated.dat"
+/* file name with ids of Nobel Laureates */
+@d NOBEL_FN "laureates.dat"
 
-@<Load the ids of authors laureated with Nobel@>=
+@<Load the ids of Nobel Laureates@>=
 fp = Fopen(NOBEL_FN, "r");
 while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
       if (is_comment(line))
       	 continue;
 
-      /* Remove new line */
+      /* Remove the new line */
       line[strcspn(line, "\r\n")] = 0;
 
       @<Insert research id in the list@>@;
 }
 Fclose(fp);
 
-@ Each new laureated id is inserted in the array list and the numer of
+@ Each new Laureate id is inserted in the array list and the number of
 elements in the list is incremented. No overflow checking is done.
 
 @<Insert research id in the list@>=
 strncpy(list.array[list.n++], line, sizeof(line));
 
-@ The function |is_nobel_laureated| check in the laureated list with
+@ The function |is_nobel_laureate| check in the laureated list with
 IDs if the author |a| id is in the list. The string comparison does
 not take into account if an id is prefix of another one because this
 is very unlikely to occur.
 
 @<Static...@>=
-static int is_nobel_laureated(struct author *a) {
+static int is_nobel_laureate(struct author *a) {
        int i;
        char *id = a->researchid;
 
@@ -246,18 +271,15 @@ an author is as follows:
 \parindent=2cm
 \item{$\bullet$} Search for an author's publications;
 \item{$\bullet$} Click on the link {\it Create Citation Report\/};
-\item{$\bullet$} The $h$-index appears on the top of the page.
+\item{$\bullet$} The $h$-index is showed at the top of the page.
 \endgroup\smallskip
 
-To calculate in batch mode, we downloaded a file with the data to
-calculate the $h$ by clicking on the button
-\hbox{{\it Export Data: Save To Text File\/}} and
-selecting {\it Records from ...\/} that saves the same data, with limit
-of 500 records, where each field is separated by comma
-that is represented by the macro |CSV_SEP|. The files were saved with
-a ".csv" extension inside |DATA_DIRECTORY|. All authors' files are
-traversed, parsed and $h$-index is calculated. The results are saved in
-a file.
+To calculate the $h$-index in batch mode, we downloaded a file with
+the data by clicking on the button \hbox{{\it Export Data: Save To
+Text File\/}} and selecting {\it Records from ...\/} that saves the
+same data, with limit of 500 records, where each field it the record
+is separated by the sign stored in the macro |CSV_SEP|. The files were
+saved with a ".csv" extension inside |DATA_DIRECTORY|.
 
 @d DATA_DIRECTORY "data/" /* directory containing all data */
 @d H_EXT ".csv" /* file used to calculate h-index extension */
@@ -291,9 +313,9 @@ if (fp) {
  ignored.  These lines contains the words "AUTHOR", "Article Group
  for:", "Timespan=All" and "\"Title\"" in the beginning of the line
  (ignore double quotes without escape).  There is also an empty line
- or a line that starts with a new line special command. Passing these
- rules, the line is a paper record of the author and is parsed to
- count the number of citations.
+ or a line that starts with a new line special command. Surviving to
+ these rules, the line is a paper record of an author, along with
+ collaborators, and is parsed to count the number of citations.
 
 @<Parse the line counting citations@>=
 if (strstr(line, "AUTHOR") != NULL ||
@@ -318,13 +340,13 @@ line is tokenized generating fields to be evaluated. The marks to
 divide the line are set to |CSV_SEP| macro. The first |SKIP_FIELDS|
 fields are ignored because contain author's name, paper's name,
 journal's name and volume and information that is not citation.
-Citations start after |SKIP_FIELDS| and are classified by year
+Citations start after |SKIP_FIELDS| fields and are classified by year
 starting in 1900, so the first citations' numbers normally are zero.
 In the citations region, they are accumulated until the last year is
 found. If their summation is lesser than a counter of papers, the
-counter is decremented, and the counter is the $h$-index. This value
-is assigned to a field in a structure called author to be written at
-the end of the program.
+counter is decremented, and the $h$-index was found. This value is
+assigned to a field |h| the author structure to be written in the end
+of the program.
 
 @d CSV_SEP ",\"\n"
 @d SKIP_FIELDS 30
@@ -363,13 +385,12 @@ to find the K of an author looks like below:
 \endgroup\smallskip
 
 To calculate in batch mode, we downloaded a file with the data to
-calculate the K by clicking on the button {\it Export...\/} and
+calculate the $K$ by clicking on the button {\it Export...\/} and
 selecting {\it Fast 5K\/} format that saves the same data, with limit
 of 5.000 records, where each field is separated by one or more tabs
-that is represented by the macro |TSV_SEP|. The files were saved with
+that is assigned to the macro |TSV_SEP|. The files were saved with
 a ".tsv" extension inside |DATA_DIRECTORY|. All authors' files are
-traversed, parsed and $K$-index is calculated. The results are saved in
-a file.
+parsed and $K$-index is calculated.
 
 @ @<Calculate K index@>=
 for (i=0; i<A; i++) {/* for each author */
@@ -420,7 +441,7 @@ the {\it Times Cited\/} value. This position offset of {\it Times
 Cited\/} value from the end is fixed for all files.
 
 @d TSV_SEP "\t"
-@d K_SKIP 7 /* number of fields that can be skiped with safety */
+@d K_SKIP 7 /* number of fields that can be skipped with safety */
 
 @<Find the citings and check if the K-index was found@>=
 { int c=0;
@@ -519,7 +540,7 @@ for (i=1; i<A; i++) {
 A space is needed between the bars and the content.
 
 @<Write results to a file@>=
-fn = "k-nobel.md";
+fn = "rank.md";
 fp = fopen(fn, "w");
 if (!fp) {
    perror(fn);
@@ -560,9 +581,14 @@ fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
 
 
-@ Memory allocated for the array of pointers |authors| is freed.
+@ Memory allocated for the array of pointers |authors| is freed.  As
+the memory deallocation is the last task to be executed, a simple
+usage notification is appended before the task.
 
 @<Free up memory@>=
+if (!verbose)
+   fprintf(stderr, "\ninfo: run \"%s -v\" to print more information.\n", argv[0]);
+
 for (i=0; i<A; i++)
     free(authors[i]);
 free(authors);

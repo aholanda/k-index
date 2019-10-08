@@ -1,0 +1,9 @@
+# File "laureated.dat" contains id of some winners of Nobel prize in
+# Physics. The list is intended to not allow the authors to be written
+# in the results if they are already here. The Researcher ID must be
+# put one per line and comments are preceded by '#'.
+# Andre K. Geim (2010)
+J-7888-2012
+# Kostya S Novoselov (2010)
+G-9581-2014
+#####################################################################
