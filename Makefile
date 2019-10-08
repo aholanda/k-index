@@ -1,4 +1,7 @@
 CFLAGS := -g
+PKG := apt
+INSTALL := install
+WINCC := x86_64-w64-mingw32-gcc
 
 DATA_URL := 'https://drive.google.com/uc?export=download&id=1yuaGztX44jec657z_mSRcVv4cWG1sBaG'
 
@@ -7,11 +10,17 @@ all: k-nobel k-nobel.pdf data
 
 k-nobel: k-nobel.c
 
+k-nobel.exe: k-nobel.c
+	$(WINCC) $< -o $@
+
 k-nobel.pdf: k-nobel.tex
 	pdftex $<
 
 data: data.zip
 	unzip $<
+
+deps:
+	`which sudo` $(PKG) $(INSTALL) cwebx gcc gcc-mingw-w64-x86-64
 
 data.zip:
 	wget --no-check-certificate -r $(DATA_URL) -O $@
