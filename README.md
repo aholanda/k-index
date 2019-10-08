@@ -1,6 +1,6 @@
 # K-NOBEL
 
-- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of Nobel Laureates.
+- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of Nobel Laureates in Physics.
 - Manuscript: [Citation network centrality: a scientific awards predictor?](https://arxiv.org/abs/1910.02369).
 
 ## Research Team
@@ -11,7 +11,7 @@
 
 ## Reproducibility
 
-The results can be totally reproduced by executing the following instructions.
+The results can be totally reproduced by performing the following instructions:
 
 ### Automatic
 
