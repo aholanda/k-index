@@ -38,7 +38,7 @@ decreased:
 
 - [Program documentation](k-nobel.pdf).
 
-## Contributors
+## Contributor
 
 - [Luis Fernando Castro](https://github.com/ferdox2) - [fixes some
   grammatical and spelling
