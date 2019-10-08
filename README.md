@@ -1,6 +1,17 @@
 # K-NOBEL
 
+- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of Nobel Laureates.
+- Manuscript: [Citation network centrality: a scientific awards predictor?](https://arxiv.org/abs/1910.02369).
+
+## Research Team
+
+- [Osame Kinouchi](https://publons.com/researcher/1537219/osame-kinouchi/);
+- [Adriano J. Holanda](https://publons.com/researcher/1343572/adriano-de-jesus-holanda/);
+- [George C. Cardoso](https://publons.com/researcher/1515858/george-c-cardoso/).
+
 ## Reproducibility
+
+The results can be totally reproduced by executing the following instructions.
 
 ### Automatic
 
@@ -19,13 +30,13 @@ decreased:
 
 - Download the data using the [link](https://drive.google.com/uc?export=download&id=1yuaGztX44jec657z_mSRcVv4cWG1sBaG);
 - Unzip the downloaded data;
-- Download the program binary [Linux-x86_64](https://drive.google.com/file/d/1CgsdmRuBWpmwd2vh0nt4e0KkhYj6aQR_/view?usp=sharing) or
-  [Windows-x86_64](https://drive.google.com/file/d/1_wRRxn95jQzDJJxIs4rYPBuo29O--lLy/view?usp=sharing) according to the platform;
+- Download the program binary [Linux-x86_64](k-nobel) or
+  [Windows-x86_64](k-nobel.exe) according to the platform;
 - Run the program in the same directory where the data were extracted.
 
 ## Documentation
 
-- [Program documentation](https://drive.google.com/file/d/1jksg-7oPvcrscEMSNTzg6ZraNtX7BR-6/view?usp=sharing).
+- [Program documentation](k-nobel.pdf).
 
 ## Reference
 
