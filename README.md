@@ -38,6 +38,12 @@ decreased:
 
 - [Program documentation](k-nobel.pdf).
 
+## Contributors
+
+- [Luis Fernando Castro](https://github.com/ferdox2) - [fixes some
+  grammatical and spelling
+  errors](https://github.com/ajholanda/k-nobel/pull/9/).
+
 ## Reference
 
 - [A simple impact index for scientific innovation and
