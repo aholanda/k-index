@@ -44,8 +44,13 @@ decreased:
   grammatical and spelling
   errors](https://github.com/ajholanda/k-nobel/pull/9/).
 
-## Reference
+## References
 
-- [A simple impact index for scientific innovation and
-  recognition](https://arxiv.org/abs/1609.05273v2). Osame Kinouchi,
-  Leonardo D. H. Soares, George C. Cardoso. arXiv:1609.05273v2, 2017.
+- J.~E.~Hirsch. ["An index to quantify an individual's scientific
+research output,"](https://www.pnas.org/content/102/46/16569) *PNAS*
+**102** (15) 16569-16572, 2005. [[*Wikpedia*
+entry](https://en.wikipedia.org/wiki/H-index)]
+- O. Kinouchi, L. D. H. Soares, G. C. Cardoso. ["A simple
+impact index for scientific innovation and
+recognition,"](https://arxiv.org/abs/1609.05273v2)
+*arXiv*:1609.05273v2, 2017.
