@@ -46,7 +46,7 @@ decreased:
 
 ## References
 
-- J.~E.~Hirsch. ["An index to quantify an individual's scientific
+- J. E. Hirsch. ["An index to quantify an individual's scientific
 research output,"](https://www.pnas.org/content/102/46/16569) *PNAS*
 **102** (15) 16569-16572, 2005. [[*Wikpedia*
 entry](https://en.wikipedia.org/wiki/H-index)]
