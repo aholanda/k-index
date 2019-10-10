@@ -10,21 +10,23 @@ The program has the following structure:
 #include <stdio.h>
 #include <stdlib.h>
 @<Include files@>@;
+@<Macro declarations@>@;
 @<Data structures@>@;
 @<Internal variables@>@;
 @<Static functions@>@;
 
 @ @c
 int main(int argc, char **argv) {
+    @<Local variables@>@;
     @<Parse program arguments@>@;
     @<Load the ids of Nobel Laureates@>@;
     @<Load authors information@>@;
-    @<Calculate h index@>@;
     @<Calculate K index@>@;
     @<Sort the authors@>@;
     @<Write results to a file@>@;
     @<Write a table with the twelve larger ks in latex format@>@;
     @<Free up memory@>@;
+    @<Print information about flags@>@;
     return 0;
 }
 
@@ -43,38 +45,160 @@ static FILE *Fopen(char *filename, char *mode) {
        return f;
 }
 
+@ @<Static...@>=
 static void Fclose(FILE *f) {
        if (f)
        	  fclose(f);
 }
 
-@ The only flag provided is {\tt -v} to print the existing comments
-inside data files and any other useful information to the user. Any
-other parameter entered to the program is ignored and causes the
-program execution without any parameters at all.
+@ The |panic| function is used when the program enters in a condition
+that was not expected to be in. It stops the program execution and
+prints a message |msg|. If there was a sure expectation that nothing
+bad can occurs, a definition of |NDEBUG| as macro turn off the
+|panic| function.
+
+@<Macro...@>=
+#undef panic
+#ifdef NDEBUG
+#define panic(msg) ((void)0)
+#else
+extern void panic(int msg);
+#define panic(msg) (fprintf(stderr, "%s:%d: PANIC: %s\n", \
+       __FILE__, (int)__LINE__, msg), abort())
+#endif
+
+@* Verbose mode. The flag {\tt -v} is provided to print the existing comments
+inside data files and any other useful information to the user.
 
 @d VERBOSE_FLAG  "-v"
 
 @<Parse program arguments@>=
-if (argc==2 && !strncmp(argv[1], VERBOSE_FLAG, 3)) {
+if (argc==2 && !strncmp(argv[1], VERBOSE_FLAG, 3)) @/
    verbose = 1;
-}
 
 @ The |verbose| Boolean variable marks if the output of the program is
 extended with the comments inside data files. The default behavior is
 to write to the output the name the generated files.
 
 @<Internal...@>=
-static int verbose;
+static int verbose=0;
 
-@** Authors. The macro |AUTHORS_DATA_FN| is set with the file name
- that contains information about researchers (authors). Each line of
- the file has the name, Web of Science or Google Scholar or Publons
- research id and a link to a page containing more information about
- the citations. Not all authors have researcher id, when this occurs, we
- assign a number and link to the Web of Science page. The data
- structure for author loads this information, and indeed the author's
- $h$-index and $K$-index.
+@ Warn the user about the {\tt -v} if the flag was not used.
+
+@<Print information about flags@>=
+if (!verbose) @/
+   fprintf(stderr, "- use \"%s -v\" to print information about data set.\n", argv[0]);
+
+@ The flag {\tt -vvv} causes the program to print the values of the
+indices moments before they are reached. It's used to check the
+correctness of the algorithms used to calculated the indices. The
+Boolean variable used to mark the mode is |confess|.
+
+@d CONFESS_FLAG  "-vvv"
+
+@<Local var...@>=
+int confess;
+
+@ The program doesn't accept both flags, {\tt -v} and {\tt -vvv}, to
+avoid an output complexity in terms of information and to set a
+boundary between the two tasks.
+
+@<Parse program arguments@>=
+if (argc==2 && !strncmp(argv[1], CONFESS_FLAG, 5)) @/
+   	confess = 1;
+
+@ The user of the program is warned about the flag {\tt -vvv} if the
+  flag was not used.
+
+@<Print information about flags@>=
+if (!confess) @/
+   fprintf(stderr, "- use \"%s -vvv\" to show details about \
+K-index calculation.\n", argv[0]);
+
+@ In confess mode, a queue is necessary to not lost previous values of
+some variable already processed. The queue is implemented using a
+circular array where the field |front| is the index of the first
+element and |rear| the index of last element. There's no problem in
+overwriting some queue elements because only a limited number of
+values |PREV_NVALS| lesser than the queue length |QLEN| are of
+interest.
+
+@d QLEN 32 /* queue length */
+@d PREV_NVALS 5 /* number of elements of interest in the queue */
+
+@<Internal...@>=
+static struct queue_struct {
+       int array[QLEN];
+       int front, rear;
+} queue;
+
+@ Add the value |idx| in the rear of the queue.
+
+@<Static...@>=
+static void enqueue(int idx) {
+       queue.array[queue.rear++] = idx;
+
+       if (queue.rear == QLEN) @/
+       	   queue.rear = 0;
+}
+
+@ The function |queue_is_empty| returns 1 when the queue is empty.
+
+@<Static...@>=
+static int queue_is_empty() {
+        return queue.rear <= queue.front;
+}
+
+@ The function |dequeue_from_rear| removes the element in the rear of
+the queue returning it. There is no need to remove elements in front
+of the queue.
+
+@<Static...@>=
+static int dequeue_from_rear() {
+       int idx;
+
+       if (queue.rear <= queue.front) {
+       	  panic("Queue is empty");
+       }
+
+       idx = queue.array[--queue.rear];
+
+       return idx;
+}
+
+@ The queue fields |front| and |rear| are initialized using
+|queue_reset|.
+
+@<Static...@>=
+static void queue_reset() {
+       queue.front = queue.rear = 0;
+}
+
+@** Input data. The data to be processed comes from CSV
+ (comma-separated values) and TSV (tab-separated vaules) files
+ containing, among other data, the papers and its number of citations
+ (CSV) or number of citings (TSV) of researchers. Each file stores
+ data about one researcher.  The citing is the number of citations
+ received by a paper that cites the researcher paper in question. The
+ CSV files are used to calculate the $h$-index and TSV are used to
+ find the $K$-index. An index file with author's identification and
+ some information like his/her homepage is used to associate the data
+ files. For example, an author with an Researcher ID equals to
+ ''Z-1111-1900'' has the papers' citations in a file called
+ ''Z-1111-1900.csv'' and the papers' citings in a file named
+ ''Z-1111-1900.tsv''. The data files were saved inside in the value of
+ |DATA_DIRECTORY| macro directory.
+
+@d DATA_DIRECTORY "data/"
+
+@* Fetching authors' record. The macro |AUTHORS_DATA_FN| is set with
+ the file name that contains information about researchers
+ (authors). Each line of the file has the name, Web of Science, Google
+ Scholar or Publons research id and a link to a page containing more
+ information about the author's publications. Not all authors have
+ researcher id, when this occurs, we assign a number and link to the
+ Web of Science page. The author's $h$-index and $K$-index are
+ assigned to the fields |h| and |K|, respectively.
 
 @d AUTHORS_DATA_FN "authors.idx"
 @d MAX_STR_LEN 256
@@ -86,48 +210,54 @@ struct author {
     char url[MAX_STR_LEN];
     int h;
     int k;
+    char timestamp[MAX_STR_LEN]; /* last modification of record */
 };
 
-@ An array of structures is used to store the |authors|' information.
-|MAX_LINE_LEN| is the maximum length of each line, the value is very
-high because some papers have too many authors. Some variables are
-made internal (static) and global because the program is so short and
-the risk to have inconsistencies is low.  This kind of programming
-technique imposes an attention to details along the program, as an example,
- the counters must be zeroed each time of using.
+@ |MAX_LINE_LEN| is the maximum length of each line, the value is very
+high because some papers have too many authors.
 
 @d MAX_LINE_LEN 1<<16
 
+@<Local...@>=
+ struct author *aut; /* temporary variable */
+ char *fn, *p; /* file name and generic pointer */
+ FILE *fp; /* file pointer */
+ char buffer[MAX_STR_LEN]; /* buffer to store strings */
+ char line[MAX_LINE_LEN]; /* store file lines */
+ int i=0, j=0; /* general-purpose counters */
+
+@ An array of structures is used to store the |authors|' information.
+ The global variable |A| is set with the number of authors processed
+ at the time it is read.
+
 @<Internal...@>=
 static struct author **authors; /* store authors' info */
-static struct author *aut; /* temporary variable */
-static char *fn, *p; /* file name and generic pointer */
-static FILE *fp; /* file pointer */
-static char buffer[MAX_STR_LEN]; /* buffer to store strings */
-static char line[MAX_LINE_LEN]; /* store file lines */
-static int A=0; /* store the number of authors */
-static int i=0, j=0; /* general-purpose counters */
+static int A=0; /* number of authors */
 
 @ Authors basic information was picked from the Web of Science page,
 more specifically at \hfil\break {\tt
 https://hcr.clarivate.com/\#categories\%3Dphysics} that is the page of
 most cited authors in physics. They are stored in a file named
-|authors.idx| that is openned to load this information. The global
-counter |A| stores the number of authors and it is used along the
-program.
+|authors.idx| that is openned to load this information.
 
 @<Load authors info...@>=
-fp = Fopen(AUTHORS_DATA_FN, "r");
-while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
-      if (is_comment(line))
-      	 continue;
+fp = Fopen(AUTHORS_DATA_FN, "r"); @/
+while (fgets(line, MAX_LINE_LEN, fp) != NULL) { @/
+      if (is_comment(line)) @/
+      	 continue; @/
 
-      /* reallocate the array of authors struct with to pointer elements */
-      authors = (struct author**)realloc(authors, get_no_authors()*sizeof(struct author*));
+      @<Reallocate the array of authors structure with to pointer elements@>@;
       @<Begin to fill authors structure@>@;
 
 }
 Fclose(fp);
+
+@ To add a new author to the |authors| array, a reallocation of space
+to it is needed because the array has the capacity exactly equals to
+the current number of authors.
+
+@<Reallocate the array of authors...@>=
+ authors = (struct author**)realloc(authors, get_no_authors()*sizeof(struct author*));
 
 @ The number of research authors is calculated by adding one to global
 variable |A| that is the next free array index.
@@ -141,11 +271,11 @@ static int get_no_authors() {
 #include <string.h> /* strtok() */
 
 @ The fields are separated by semicolon inside |authors.idx|, a record in
-the file looks like
+the file looks like\smallskip
 
-{\tt L-000-000;Joe Doe;http//joedoe.joe}
+\centerline{\tt L-000-000;Joe Doe;http//joedoe.joe}\medskip
 
-where the first field {\tt L-000-000} is the Research ID or ORCID,
+\noindent where the first field {\tt L-000-000} is the Research ID or ORCID,
 when the author doesn't have an identifier, a custom
 number is assigned. The second field {\tt Joe Doe} is the author name
 and the third field is the link to the page that contains information
@@ -171,6 +301,16 @@ while (p != NULL) {
         break;
         case 2:
         strncpy(aut->url, p, MAX_STR_LEN);
+        break;
+        case 3:
+        aut->h = atoi(p);
+	if (aut->h <= 0) {
+	   fprintf(stderr, "==> h=%d <==\n");
+	   panic("Wrong value of h-index, run confess mode.");
+	}
+        break;
+        case 4:
+        strncpy(aut->timestamp, p, MAX_STR_LEN);
         break;
         default:
         break;
@@ -203,7 +343,7 @@ int is_comment(char *line) {
       return 0;
 }
 
-@** Nobel Laureates. We have to discard researchers that
+@* Fetching Nobel Laureates. We have to discard researchers that
 already was laureated with the Nobel Prize. Up to 2018, there was 935
 laureates that awarded Nobel Prize. We put more chairs in the room to
 accomodate future laureated researchers. A simple array is used to
@@ -262,114 +402,37 @@ static int is_nobel_laureate(struct author *a) {
        return 0;
 }
 
-@** $h$-index. The number of papers is in decreasing order of citations
+@** Indices calculation. There is procedure in this program to
+calculate the scientometric index $K$. The $h$ is the Hirsch index
+proposed by Hirsch [J.~E.~Hirsch, ``An index to quantify an
+individual's scientific research output,'' {\sl PNAS\/ \bf 102}~(15)
+16569--16572, 2005]. It is obtained at Web of Science, so no further
+procedure is needed. The $K$ stands for Kinouchi index and was
+prososed by O. Kinouchi {\it et al.\/}~[O.~Kinouchi, L.~D.~H.~Soares,
+G.~C.~Cardoso, ``A simple centrality index for scientific social
+recognition'', {\sl Physica~A\/ \bf 491}~(1), 632--640].
+@^Hirsch, Jorge Eduardo@>
+@^Cardoso, George Cunha@>
+@^Kinouch, Osame@>
+@^Soares, Leonardo D. H.@>
+
+@* $h$-index. The number of papers is in decreasing order of citations
 that the number of citations is greater than the paper position is the
 $h$-index.  On Web of Science homepage, the procedure to find the $h$ of
 an author is as follows:
 
 \begingroup
 \parindent=2cm
-\item{$\bullet$} Search for an author's publications;
+\item{$\bullet$} Search for an author's publications by {\sl Author\/}
+ or {\sl Author Identifiers};
 \item{$\bullet$} Click on the link {\it Create Citation Report\/};
 \item{$\bullet$} The $h$-index is showed at the top of the page.
 \endgroup\smallskip
 
-To calculate the $h$-index in batch mode, we downloaded a file with
-the data by clicking on the button \hbox{{\it Export Data: Save To
-Text File\/}} and selecting {\it Records from ...\/} that saves the
-same data, with limit of 500 records, where each field it the record
-is separated by the sign stored in the macro |CSV_SEP|. The files were
-saved with a ".csv" extension inside |DATA_DIRECTORY|.
+The $h$-index value is stored in the author record structure and saved
+in ``authors.idx'' file.
 
-@d DATA_DIRECTORY "data/" /* directory containing all data */
-@d H_EXT ".csv" /* file used to calculate h-index extension */
-
-@<Calculate h index@>=
-for (i=0; i<A; i++) {/* for each author */
-    int h=0; /* temporary h-index */
-
-    @<Process csv file@>@;
-
-    authors[i]->h = h;
-}
-
-@ @<Process csv file@>=
-strncpy(buffer, DATA_DIRECTORY, sizeof(DATA_DIRECTORY));
-strncat(buffer, authors[i]->researchid, sizeof(authors[i]->researchid));
-strncat(buffer, H_EXT, sizeof(H_EXT));
-fn = buffer;
-fp = fopen(fn, "r");
-if (fp) {
-    while (fgets(line, sizeof(line), fp) != NULL) {
-        @<Parse the line counting citations@>@;
-    }
-    fclose(fp);
-} else {
-    perror(fn);
-    exit(-2);
-}
-
-@ The head of the citations file contains some lines that must be
- ignored.  These lines contains the words "AUTHOR", "Article Group
- for:", "Timespan=All" and "\"Title\"" in the beginning of the line
- (ignore double quotes without escape).  There is also an empty line
- or a line that starts with a new line special command. Surviving to
- these rules, the line is a paper record of an author, along with
- collaborators, and is parsed to count the number of citations.
-
-@<Parse the line counting citations@>=
-if (strstr(line, "AUTHOR") != NULL ||
-    strstr(line, "IDENTIFICADORES DE AUTOR:") != NULL ) {
-    continue;
-} else if (strstr(line, "Article Group for:") != NULL) {
-    continue;
-} else if (strstr(line, "Timespan=All") != NULL ||
-	   strstr(line, "Tempo estipulado=Todos os anos") != NULL) {
-    continue;
-} else if (strstr(line, "\"Title\",") != NULL ||
-	   strstr(line, "\"Autores\",") != NULL) {
-    continue;
-} else if (line[0] == '\n') { /* start with new line */
-    continue;
-} else {
-    @<Count the citations and check if the h-index was found@>@;
-}
-
-@ To count the citations and check if the $h$-index exists, the
-line is tokenized generating fields to be evaluated. The marks to
-divide the line are set to |CSV_SEP| macro. The first |SKIP_FIELDS|
-fields are ignored because contain author's name, paper's name,
-journal's name and volume and information that is not citation.
-Citations start after |SKIP_FIELDS| fields and are classified by year
-starting in 1900, so the first citations' numbers normally are zero.
-In the citations region, they are accumulated until the last year is
-found. If their summation is lesser than a counter of papers, the
-counter is decremented, and the $h$-index was found. This value is
-assigned to a field |h| the author structure to be written in the end
-of the program.
-
-@d CSV_SEP ",\"\n"
-@d SKIP_FIELDS 30
-
-@<Count the citations and check if the h-index was found@>=
-{ int c=0;
-  j=0;
-  p = strtok(line, CSV_SEP);
-  while (p != NULL) {
-        if (j > SKIP_FIELDS) {
-	      	 c += atoi(p);
-        }
-        p = strtok(NULL, CSV_SEP);
-        j++;
-  }
-  if (h > c) { /* found h */
-     h--;
-     break; /* stop reading file */
-  }
-  h++;
-}
-
-@** $K$-index. If an author receives at least K citations, where each
+@* $K$-index. If an author receives at least K citations, where each
 one of these K citations have get at least K citations, then the
 author's $K$-index was found. On Web of Science homepage, the procedure
 to find the K of an author looks like below:
@@ -388,9 +451,7 @@ To calculate in batch mode, we downloaded a file with the data to
 calculate the $K$ by clicking on the button {\it Export...\/} and
 selecting {\it Fast 5K\/} format that saves the same data, with limit
 of 5.000 records, where each field is separated by one or more tabs
-that is assigned to the macro |TSV_SEP|. The files were saved with
-a ".tsv" extension inside |DATA_DIRECTORY|. All authors' files are
-parsed and $K$-index is calculated.
+that is assigned to the macro |TSV_SEP|.
 
 @ @<Calculate K index@>=
 for (i=0; i<A; i++) {/* for each author */
@@ -407,17 +468,24 @@ strncpy(buffer, DATA_DIRECTORY, sizeof(DATA_DIRECTORY));
 strncat(buffer, authors[i]->researchid, sizeof(authors[i]->researchid));
 strncat(buffer, K_EXT, sizeof(K_EXT));
 fn = buffer;
-fp = fopen(fn, "r");
-if (fp) {
-    int k=1; /* temporary K-index */
-    while (fgets(line, sizeof(line), fp) != NULL) {
-        @<Parse the line counting citings@>@;
-    }
-    fclose(fp);
-} else {
-    perror(fn);
-    exit(-2);
+fp = Fopen(fn, "r");
+
+ pos=1;
+ ncits=0, old_ncits = 1000000;
+
+if (confess) {
+     fprintf(stderr, "%d. %s\n", i+1, authors[i]->name);
+      queue_reset();
 }
+
+while (fgets(line, sizeof(line), fp) != NULL) {
+       @<Parse the line counting citings@>@;
+}
+Fclose(fp);
+
+@ @<Local variables@>=
+ int pos; /* temporary variable to store the paper position */
+ int ncits, old_ncits; /* current and old value of number of citings */
 
 @ The file with citings has few lines to ignore, basically it is only one
 that begins with "PT $\backslash$t" (ignore double quotes). A line that begins
@@ -444,83 +512,120 @@ Cited\/} value from the end is fixed for all files.
 @d K_SKIP 7 /* number of fields that can be skipped with safety */
 
 @<Find the citings and check if the K-index was found@>=
-{ int c=0;
+{ int ncits=0;
   j=0;
   p = strtok(line, TSV_SEP);
   while (p != NULL) {
 	if (j > K_SKIP) {
-	      enqueue(p);
+	      push(p);
 	}
 	j++;
         p = strtok(NULL, TSV_SEP);
   }
 
-  for (j=0; j<3; j++) {
-      p = dequeue();
-      if (p == NULL)
-          queue_panic();
-   }
-    c = atoi(p);
-    queue_reset();
+  for (j=0; j<3; j++) @/
+      p = pop();
 
-   if (k > c) { /* found k */
-       k--;
-       authors[i]->k = k;
-      break;
+   ncits = atoi(p);
+   stack_reset();
+
+   @<Check parsing integrity of citings@>@;
+   @<Enqueue temporary index value@>@;
+
+   old_ncits = ncits;
+
+   if (pos > ncits) { /* found k */
+       pos--;
+       authors[i]->k = pos;
+
+       @<Write the last values@>@;
+
+       break;
   }
-  k++;
+  pos++;
 }
 
-@** Queue. A humble queue is implemented to store few pointers using
-FIFO policy. The queue is composed by an array of pointers and an index
-|idx| that marks the top element of the queue.
+@ The articles are listed in descending order of number of citings.
+ For this reason, the old value of number of citings |old_ncits|
+ must not be lesser than current value just parsed |ncits|. The
+ verification stops the program execution if this invariant is not
+ obeyed.
+
+@<Check parsing integrity of citings@>=
+if (old_ncits < ncits) {
+   fprintf(stderr, "==> %d<%d <==\n", old_ncits, ncits);
+   panic("Previous number of citings is lesser the the current one.");
+}
+
+@ @<Enqueue temporary index value@>=
+if (confess) @/
+   enqueue(ncits);
+
+@ @<Write the last values@>=
+if (confess) { @/
+   register int ii;
+
+   fprintf(stderr, "==> found K=%d <==\n <> Last values\n", authors[i]->k);
+   for (ii=0; ii<PREV_NVALS; ii++) {
+       if (queue_is_empty())
+       	  break;
+
+       fprintf(stderr, " K: pos=%d, ncits=%d\n", (pos-- +1), \
+               dequeue_from_rear());
+   }
+}
+
+@** Stack. A humble stack is implemented to store few pointers using
+FIFO policy. The stack is composed by an array of pointers named
+|data| and an index named |top| to point to the next index to add
+element in the stack. Three stacks are declared, one for storing
+temporary values of the fields during $K$-index calculation, other to
+store temporary values of citation and other to store temporary values
+of citings.
+
+@d STACK_LEN 0x10000
 
 @<Internal...@>=
-static char *stack[64];
-static int idx=0;
+static struct {
+       char *data[STACK_LEN];
+       int top;
+} stack;
 
-@ Elements are inserted at the top of the queue by invoking
-|enqueue| and using |char *p| as parameter. The index |idx|
-is incremented to the number of elements in the queue and
-|idx-1| is the top of the queue.
+@ Elements are inserted at the top of the stack by invoking |enstack|
+and using |char *p| as parameter. The index |idx| is incremented to
+the number of elements in the stack and |top-1| is the index of the
+element in the top.
 
 @<Static...@>=
-static void enqueue(char *p) {
-       if (p == NULL)
-         return;
+static void push(char *p) {
+       if (p == NULL) {
+          panic("Tring to push NULL in the stack");
+	}
 
- 	stack[idx++] = p;
+ 	stack.data[stack.top++] = p;
+
+	if (stack.top == STACK_LEN) {
+	   panic("Stack overflow");
+	}
 }
 
-@ Elements from the top of the queue are removed by |dequeue|
-function. If there is no element in the queue, |NULL| is returned.
+@ Elements from the top of the stack are removed by |pop|
+function. If there is no element in the stack, |NULL| is returned.
 
 @<Static...@>=
-static char* dequeue() {
-       if (idx <= 0)
-          return NULL;
+static char* pop() {
+       if (stack.top <= 0)
+          panic("Stack underflow");
 	else
-	  return stack[--idx];
+	  return stack.data[--stack.top];
 }
 
-@ When for some reason, an error related with the queue occurs
-|queue_panic| may be invoked, exiting from the execution program.
-
-@d ERR_QUEUE -0x1
+@ To reset the stack, |top| is assigned to zero.
 
 @<Static...@>=
-static void queue_panic() {
-       fprintf(stderr, "Queue is very empty.\n");
-       exit(ERR_QUEUE);
+static void stack_reset() {
+       stack.top = 0;
 }
-
-@ To reset the queue, |idx| is reseted to zero.
-
-@<Static...@>=
-static void queue_reset() {
-       idx = 0;
-}
-
 
 @** Sorting. The authors are classified in descending order
 according to their $K$-index. The insertion-sort algorithm
@@ -536,12 +641,14 @@ for (i=1; i<A; i++) {
     authors[j+1] = aut;
 }
 
-@** Output. The results are written as a table in markdown format.
-A space is needed between the bars and the content.
+@** Output. The results are written as a table in markdown format to
+the file name assigned to |RANK_FN|.  A space is needed between the
+bars and the content.
+
+@d RANK_FN "k-nobel.md"
 
 @<Write results to a file@>=
-fn = "rank.md";
-fp = fopen(fn, "w");
+fp = fopen(RANK_FN, "w");
 if (!fp) {
    perror(fn);
    exit(-4);
@@ -555,7 +662,7 @@ for (i=0; i<A; i++) {
        authors[i]->h, authors[i]->k);
 }
 fclose(fp);
-fprintf(stderr, "* Wrote \"%s\"\n", fn);
+fprintf(stderr, "* Wrote \"%s\"\n", RANK_FN);
 
 @ A table with the twelve larger $K$s to be included in the manuscript
 is written in LaTeX format.
@@ -586,9 +693,6 @@ the memory deallocation is the last task to be executed, a simple
 usage notification is appended before the task.
 
 @<Free up memory@>=
-if (!verbose)
-   fprintf(stderr, "\ninfo: run \"%s -v\" to print more information.\n", argv[0]);
-
 for (i=0; i<A; i++)
     free(authors[i]);
 free(authors);
