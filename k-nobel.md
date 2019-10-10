@@ -15,16 +15,16 @@
 | 13 | [Mohammad K Nazeeruddin](https://publons.com/researcher/2890617/mohammad-k-nazeeruddin/) | 126 | 436 |
 | 14 | [Naomi Halas](https://publons.com/researcher/1710430/naomi-halas/) | 122 | 427 |
 | 15 | [Pulickel Ajayan](http://bit.ly/2ZmkAhq) | 112 | 414 |
-| 16 | [Zhenan Bao](https://publons.com/researcher/1388542/zhenan-bao/) | 104 | 412 |
+| 16 | [Zhenan Bao](https://app.webofknowledge.com/author/#/record/21295?SID=7CjYmZJRd89FJwWEyvS) | 104 | 412 |
 | 17 | [John Rogers](https://publons.com/researcher/2234617/john-rogers/) | 127 | 405 |
 | 18 | [Antonio H. Castro Neto](https://publons.com/researcher/2552790/antonio-h-castro-neto/) | 86 | 403 |
 | 19 | [Francisco Guinea](https://publons.com/researcher/2893072/francisco-guinea/) | 85 | 393 |
 | 20 | [Arthur J. Nozik](https://publons.com/researcher/1572635/arthur-j-nozik/) | 77 | 386 |
 | 21 | [Tony Heinz](https://publons.com/researcher/1744704/tony-heinz/) | 98 | 382 |
 | 22 | [Georg Kresse](http://orcid.org/0000-0001-9102-4259) | 100 | 382 |
-| 23 | [P J E Peebles](https://phy.princeton.edu/people/p-james-peebles) | 73 | 380 |
+| 23 | [P J E Peebles](https://app.webofknowledge.com/author/#/record/97459?SID=7CjYmZJRd89FJwWEyvS) | 73 | 380 |
 | 24 | [Peter Zoller](https://publons.com/researcher/2465652/peter-zoller/) | 117 | 379 |
-| 25 | [Xinran Wang](https://publons.com/researcher/2833048/xinran-wang/) | 42 | 373 |
+| 25 | [Xinran Wang](https://app.webofknowledge.com/author/#/record/613553?SID=7CjYmZJRd89FJwWEyvS) | 42 | 373 |
 | 26 | [Nuno M R Peres](https://publons.com/researcher/2884095/nuno-m-r-peres/) | 35 | 364 |
 | 27 | [Peter Blake](https://publons.com/researcher/2832922/peter-blake/) | 21 | 363 |
 | 28 | [Gang Li](https://publons.com/researcher/1435966/gang-li/) | 66 | 362 |
@@ -75,11 +75,11 @@
 | 73 | [Chris G Van de Walle](https://publons.com/researcher/2759444/chris-g-van-de-walle/) | 93 | 262 |
 | 74 | [Çağlar Ö Girit](https://publons.com/researcher/2547932/caglar-o-girit/) | 26 | 259 |
 | 75 | [Leon Balents](http://bit.ly/2OzIRzP) | 42 | 253 |
-| 76 | [Michel Mayor](https://www.iau.org/administration/membership/individual/2072/) | 53 | 252 |
+| 76 | [Michel Mayor](https://app.webofknowledge.com/author/#/record/49030?SID=7CjYmZJRd89FJwWEyvS) | 53 | 252 |
 | 77 | [Zhong Fang](https://publons.com/researcher/2853649/zhong-fang/) | 73 | 245 |
 | 78 | [Kenji WATANABE](https://publons.com/researcher/2767349/kenji-watanabe/) | 76 | 245 |
 | 79 | [Takashi TANIGUCHI](https://publons.com/researcher/2767445/takashi-taniguchi/) | 77 | 244 |
-| 80 | [M. Zahid HASAN](https://publons.com/researcher/2735069/m-zahid-hasan/) | 61 | 242 |
+| 80 | [M. Zahid HASAN](https://app.webofknowledge.com/author/#/record/87726?SID=7CjYmZJRd89FJwWEyvS) | 61 | 242 |
 | 81 | [Gang Chen](https://publons.com/researcher/2504319/gang-chen/) | 104 | 240 |
 | 82 | [Daniel C Ralph](https://publons.com/researcher/2822696/daniel-c-ralph/) | 49 | 240 |
 | 83 | [Immanuel Bloch](https://publons.com/researcher/2822764/immanuel-bloch/) | 72 | 238 |
@@ -95,7 +95,7 @@
 | 93 | [Wei D. Lu](https://publons.com/researcher/2785340/wei-d-lu/) | 52 | 221 |
 | 94 | [Paul C. Canfield](https://publons.com/researcher/2517565/paul-c-canfield/) | 90 | 219 |
 | 95 | [Robert J Schoelkopf](https://publons.com/researcher/2690819/robert-j-schoelkopf/) | 66 | 219 |
-| 96 | [Didier Queloz](https://www.astro.phy.cam.ac.uk/directory/prof-didier-queloz) | 85 | 218 |
+| 96 | [Didier Queloz](https://app.webofknowledge.com/author/#/record/25433?SID=8AJAtnSXoyb88bPaByL) | 85 | 218 |
 | 97 | [Willie J Padilla](https://publons.com/researcher/2892983/willie-j-padilla/) | 46 | 216 |
 | 98 | [Federico Capasso](https://www.seas.harvard.edu/directory/capasso) | 75 | 214 |
 | 99 | [Joel E Moore](https://publons.com/researcher/2208388/joel-e-moore/) | 45 | 213 |
@@ -110,7 +110,7 @@
 | 108 | [Gongming Wang](https://publons.com/researcher/2746022/gongming-wang/) | 45 | 197 |
 | 109 | [jun ye](https://publons.com/researcher/1643440/jun-ye/) | 83 | 196 |
 | 110 | [Jeroen van den Brink](https://publons.com/researcher/2787570/jeroen-van-den-brink/) | 54 | 196 |
-| 111 | [Frank Koppens](http://orcid.org/0000-0001-9764-6120) | 44 | 195 |
+| 111 | [Frank Koppens](https://app.webofknowledge.com/author/#/record/369334?SID=7CjYmZJRd89FJwWEyvS) | 44 | 195 |
 | 112 | [B. Andrei Bernevig](https://phy.princeton.edu/people/bogdan-bernevig) | 48 | 193 |
 | 113 | [Yew san Hor](https://publons.com/researcher/2026717/yew-san-hor/) | 35 | 191 |
 | 114 | [Dimitri N. Basov](https://infrared.cni.columbia.edu/basov/) | 51 | 187 |
