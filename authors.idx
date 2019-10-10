@@ -1,35 +1,85 @@
-# File "author.ix" stores the identification, name and link to a web
-# page with more information about them. The fields are separated by
-# semicolon ';'. Anything after hash '#' is considered comment.
-L-9825-2016;Jong-Hyun Ahn;https://publons.com/researcher/2228321/jong-hyun-ahn/
-E-6889-2014;Javier Aizpurua;https://publons.com/researcher/1331876/javier-aizpurua/
-e3496b8d62774ab16a5a6a83dc115ca4;Pulickel Ajayan;http://bit.ly/2ZmkAhq
-N-8863-2015;Paul Alivisatos;https://publons.com/researcher/2342530/paul-alivisatos/
-caf8b3a0ca8e61b5d1b3b0bcd7715384;James Analytis;http://bit.ly/2ZiGemZ
-C-4098-2017;Markus Aspelmeyer;https://publons.com/researcher/2153264/markus-aspelmeyer/
-H-2823-2014;Harry A. Atwater;https://publons.com/researcher/2517449/harry-a-atwater/
-733b344b42b5685b5d967e1c5ba69b2e;Richard D. Averitt;https://scholar.google.com/citations?user=FdXKTjsAAAAJ&hl=en&oi=ao
-3a1d01fedf4743d9262cdbf2e32eda35;Phaedon Avouris;http://bit.ly/2YB8JuJ
-F-9230-2011;Alexander A. Balandin;https://publons.com/researcher/2777132/alexander-a-balandin/
-b8ad28136d0cdb0980e1d35edfd0b213;Leon Balents;http://bit.ly/2OzIRzP
-e73e8fb70d96e2da1246c1581ca6e8ba;Arun Bansil;http://bit.ly/2KkTDEF
-B-2453-2012;Wenzhong Bao;https://publons.com/researcher/1404245/wenzhong-bao/
-0000-0002-0972-1715;Zhenan Bao;https://publons.com/researcher/1388542/zhenan-bao/
-9371a269d06a3d6aa2c439e6305556e6;Dimitri N. Basov;https://infrared.cni.columbia.edu/basov/
-0000-0003-4710-1768;Laura Baudis;http://orcid.org/0000-0003-4710-1768
-B-7424-2008;Carlo W.J. Beenakker;https://publons.com/researcher/2885743/carlo-wj-beenakker/
-7bec63b71e3560d3516568caebd6ddbf;Berger Claire;https://www.physics.gatech.edu/user/claire-berger
-e6cd4a7c8fa961ebf8076483e2e54a39;B. Andrei Bernevig;https://phy.princeton.edu/people/bogdan-bernevig
-E-8556-2010;Peter Blake;https://publons.com/researcher/2832922/peter-blake/
-G-3174-2010;Immanuel Bloch;https://publons.com/researcher/2822764/immanuel-bloch/
-3c2e6eb84dd675a8a1dd03eb5de54431;D.A. Bonn;https://www.phas.ubc.ca/users/douglas-bonn
-35fffc267b7a392328fc52bb63fb7935;Christoph Bostedt;http://bit.ly/2YmFX5K
-E-9260-2010;John D. Bozek;https://publons.com/researcher/2832361/john-d-bozek/
-E-9423-2011;Sergey I. Bozhevolnyi;https://publons.com/researcher/2784485/sergey-i-bozhevolnyi/
-A-7481-2009;Sergey L. Bud'ko;https://publons.com/researcher/1300252/sergey-l-budko/
-1a911f21bac42104f0be155d45a2c83b;Vladimit Bulovic;https://onelab.mit.edu/people
-H-2698-2014;Paul C. Canfield;https://publons.com/researcher/2517565/paul-c-canfield/
-88d608d33e544af5f8bf067ddc0537d7;Federico Capasso;https://www.seas.harvard.edu/directory/capasso
+# File "authors.ix" stores information about researchers.
+# The fields are separated by semicolon ';'.
+# Anything after hash '#' is considered comment.
+# When the Query used is not specified, the WoS search was performed
+# using Author Identifier only.
+# TIMESTAMP is an optional field to log the time the entry was retrieved
+# and its format is YYYYmmDDHHMMSS
+# Y - Year, m - month, D - Day, H - Hour, M - Minute, S - Second
+# AUTHOR IDENTIFIER;RESEARCHER NAME;URL;H-INDEX;TIMESTAMP
+L-9825-2016;Jong-Hyun Ahn;https://publons.com/researcher/2228321/jong-hyun-ahn/;56;20191010111858
+E-6889-2014;Javier Aizpurua;https://publons.com/researcher/1331876/javier-aizpurua/;54;20191010112038
+# Query for Pulickel Ajayan
+# AUTHOR: (Ajayan, Pulickel)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+e3496b8d62774ab16a5a6a83dc115ca4;Pulickel Ajayan;http://bit.ly/2ZmkAhq;112;20191010112444
+N-8863-2015;Paul Alivisatos;https://publons.com/researcher/2342530/paul-alivisatos/;149;20191010112619
+# Query for James Analytis
+#  AUTHOR: Analytis, J. G.
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/419188?SID=7CjYmZJRd89FJwWEyvS
+caf8b3a0ca8e61b5d1b3b0bcd7715384;James Analytis;http://bit.ly/2ZiGemZ;47;20191010144727
+C-4098-2017;Markus Aspelmeyer;https://publons.com/researcher/2153264/markus-aspelmeyer/;46;20191010113054
+H-2823-2014;Harry A. Atwater;https://publons.com/researcher/2517449/harry-a-atwater/;91;20191010113206
+# Query for Richard D. Averitt
+# AUTHOR: (Averitt, Richard D) OR AUTHOR: (Averitt, R D)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+733b344b42b5685b5d967e1c5ba69b2e;Richard D. Averitt;https://scholar.google.com/citations?user=FdXKTjsAAAAJ&hl=en&oi=ao;42;20191010113606
+# Query for Phaedon Avouris
+# AUTHOR: (Avouris, Phaedon) OR AUTHOR: (Avouris, P)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+3a1d01fedf4743d9262cdbf2e32eda35;Phaedon Avouris;http://bit.ly/2YB8JuJ;122;20191010113933
+F-9230-2011;Alexander A. Balandin;https://publons.com/researcher/2777132/alexander-a-balandin/;44;20191010114502
+# Query for Leon Balents
+# AUTHOR: (Balents, Leon)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+b8ad28136d0cdb0980e1d35edfd0b213;Leon Balents;http://bit.ly/2OzIRzP;42;20191010114738
+# Query for Arun Bansil
+# AUTHOR: (Bansil, Arun)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+e73e8fb70d96e2da1246c1581ca6e8ba;Arun Bansil;http://bit.ly/2KkTDEF;37;20191010115110
+B-2453-2012;Wenzhong Bao;https://publons.com/researcher/1404245/wenzhong-bao/;43;20191010115218
+# Query for Zhenan Bao
+# AUTHOR: Bao, Zhenan
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/21295?SID=7CjYmZJRd89FJwWEyvS
+# Publons profile: https://publons.com/researcher/1388542/zhenan-bao/
+0000-0002-0972-1715;Zhenan Bao;https://app.webofknowledge.com/author/#/record/21295?SID=7CjYmZJRd89FJwWEyvS;104;20191010143931
+# Query for Dimitri N. Basov
+# AUTHOR: (Basov, Dimitri N.) OR AUTHOR: (Basov, D N.)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+9371a269d06a3d6aa2c439e6305556e6;Dimitri N. Basov;https://infrared.cni.columbia.edu/basov/;51;20191010115650
+0000-0003-4710-1768;Laura Baudis;http://orcid.org/0000-0003-4710-1768;48;20191010120022
+B-7424-2008;Carlo W.J. Beenakker;https://publons.com/researcher/2885743/carlo-wj-beenakker/;81;20191010120147
+# Query for Claire Berger
+# AUTHOR: (Berger, Claire)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+7bec63b71e3560d3516568caebd6ddbf;Claire Berger;https://www.physics.gatech.edu/user/claire-berger;33;20191010120654
+# Query for B. Andrei Bernevig
+# AUTHOR: (Bernevig, B. Andrei)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+e6cd4a7c8fa961ebf8076483e2e54a39;B. Andrei Bernevig;https://phy.princeton.edu/people/bogdan-bernevig;48;20191010140809
+E-8556-2010;Peter Blake;https://publons.com/researcher/2832922/peter-blake/;21;20191010140939
+G-3174-2010;Immanuel Bloch;https://publons.com/researcher/2822764/immanuel-bloch/;72;20191010141107
+# Query for D.A. Bonn
+# AUTHOR: (Bonn, D A)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+3c2e6eb84dd675a8a1dd03eb5de54431;D.A. Bonn;https://www.phas.ubc.ca/users/douglas-bonn;42;20191010141310
+# Query for Christoph Bostedt
+#  AUTHOR: Bostedt, C.
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/122931?SID=7CjYmZJRd89FJwWEyvS
+35fffc267b7a392328fc52bb63fb7935;Christoph Bostedt;http://bit.ly/2YmFX5K;55;20191010145050
+E-9260-2010;John D. Bozek;https://publons.com/researcher/2832361/john-d-bozek/;56;20191010141951
+E-9423-2011;Sergey I. Bozhevolnyi;https://publons.com/researcher/2784485/sergey-i-bozhevolnyi/;66;20191010142140
+# NOT_FOUND_IN_WOS
+#A-7481-2009;Sergey L. Bud'ko;https://publons.com/researcher/1300252/sergey-l-budko/;
+# Query for Vladimir Bulovic
+# AUTHOR: (Bulovic, Vladimir)
+# Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
+1a911f21bac42104f0be155d45a2c83b;Vladimir Bulovic;https://onelab.mit.edu/people;53;20191010142615
+H-2698-2014;Paul C. Canfield;https://publons.com/researcher/2517565/paul-c-canfield/;90;20191010142750
+88d608d33e544af5f8bf067ddc0537d7;Federico Capasso;https://www.seas.harvard.edu/directory/capasso;75;20191010142917
 C-8363-2014;Antonio H. Castro Neto;https://publons.com/researcher/2552790/antonio-h-castro-neto/;86
 579acb3e297fb248b509b24a1424fc02;R. J. Cava;https://chemistry.princeton.edu/faculty;60
 J-1325-2014;Gang Chen;https://publons.com/researcher/2504319/gang-chen/;104
@@ -56,9 +106,15 @@ G-4870-2011;Michael Graetzel;https://publons.com/researcher/2773230/michael-grae
 D-2864-2009;Rudolf Grimm;https://publons.com/researcher/2854685/rudolf-grimm/;55
 A-7122-2008;Francisco Guinea;https://publons.com/researcher/2893072/francisco-guinea/;85
 D-2935-2011;Naomi Halas;https://publons.com/researcher/1710430/naomi-halas/;122
-D-8237-2012;M. Zahid HASAN;https://publons.com/researcher/2735069/m-zahid-hasan/;38
+# Query for M. Zahid HASAN
+# AUTHOR: Hasan, M. Zahid
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/87726?SID=7CjYmZJRd89FJwWEyvS
+# Publons profile: https://publons.com/researcher/2735069/m-zahid-hasan/
+D-8237-2012;M. Zahid HASAN;https://app.webofknowledge.com/author/#/record/87726?SID=7CjYmZJRd89FJwWEyvS;61;20191010145329
 K-7797-2015;Tony Heinz;https://publons.com/researcher/1744704/tony-heinz/;98
 E-1879-2011;James C. Hone;https://publons.com/researcher/2789866/james-c-hone/;72
+# h-index for Yew san Hor correct
 S-1429-2017;Yew san Hor;https://publons.com/researcher/2026717/yew-san-hor/;35
 J-3489-2013;HIdeo Hosono;https://publons.com/researcher/1639106/hideo-hosono/;103
 N-6660-2013;Liangbing Hu;https://publons.com/researcher/2580423/liangbing-hu/;85
@@ -69,7 +125,12 @@ A-1035-2007;Charles L. Kane;https://publons.com/researcher/2898282/charles-l-kan
 D-4359-2012;Mikhail I. Katsnelson;https://publons.com/researcher/2738444/mikhail-i-katsnelson/;89
 N-1886-2013;Philip Kim;https://publons.com/researcher/1380898/philip-kim/;84
 B-3133-2013;Tobias J Kippenberg;https://publons.com/researcher/2673513/tobias-j-kippenberg/;48
-0000-0001-9764-6120;Frank Koppens;http://orcid.org/0000-0001-9764-6120;35
+# Query for Frank Koppens
+# AUTHOR: Koppens, Frank H. L.
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/369334?SID=7CjYmZJRd89FJwWEyvS
+# ORCID profile: http://orcid.org/0000-0001-9764-6120
+0000-0001-9764-6120;Frank Koppens;https://app.webofknowledge.com/author/#/record/369334?SID=7CjYmZJRd89FJwWEyvS;44;20191010145814
 0000-0001-9102-4259;Georg Kresse;http://orcid.org/0000-0001-9102-4259;100
 N-7615-2016;Michele Lazzeri;https://publons.com/researcher/1641461/michele-lazzeri/;45
 I-1337-2014;Maciej Lewenstein;https://publons.com/researcher/1347157/maciej-lewenstein/;92
@@ -84,6 +145,12 @@ H-4352-2011;Zhuang Liu;https://publons.com/researcher/2766055/zhuang-liu/;112
 E-8388-2011;Wei D. Lu;https://publons.com/researcher/2785340/wei-d-lu/;52
 H-3090-2014;David G Mandrus;https://publons.com/researcher/2517211/david-g-mandrus/;65
 K-5726-2012;Francesco Mauri;https://publons.com/researcher/2685632/francesco-mauri/;70
+# Query for Michel Mayor
+# AUTHOR: Mayor, M
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source for h-index: https://app.webofknowledge.com/author/#/record/49030?SID=7CjYmZJRd89FJwWEyvS
+# Personal homepage: https://www.iau.org/administration/membership/individual/2072/
+f32b71fa791db6b45b0f46d80b1e9bd1;Michel Mayor;https://app.webofknowledge.com/author/#/record/49030?SID=7CjYmZJRd89FJwWEyvS;53;20191010154908
 B-6576-2008;Igor Mazin;https://publons.com/researcher/1599347/igor-mazin/;51
 # NOT_FOUND_IN_WOS
 #A-1275-2007;Michael D McGehee;https://publons.com/researcher/2898072/michael-d-mcgehee/
@@ -103,11 +170,23 @@ A-6290-2008;Jeremy L O'Brien;https://publons.com/researcher/2893734/jeremy-l-obr
 G-1683-2012;Barbaros Oezyilmaz;https://publons.com/researcher/2718522/barbaros-oezyilmaz/;47
 A-7235-2008;Willie J Padilla;https://publons.com/researcher/2892983/willie-j-padilla/;46
 D-2521-2012;Stuart Parkin;https://publons.com/researcher/1511176/stuart-parkin/;75
+# Query for P J E Peebles
+# AUTHOR: Peebles, PJE
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/97459?SID=7CjYmZJRd89FJwWEyvS
+# Personal homepage: https://phy.princeton.edu/people/p-james-peebles
+b6041a29709568d244e4491968efa46c;P J E Peebles;https://app.webofknowledge.com/author/#/record/97459?SID=7CjYmZJRd89FJwWEyvS;73;20191010143643
 B-9537-2008;Nuno M R Peres;https://publons.com/researcher/2884095/nuno-m-r-peres/;35
 I-7895-2013;Martin B Plenio;https://publons.com/researcher/2617945/martin-b-plenio/;79
 D-1490-2011;Albert Polman;https://publons.com/researcher/2797751/albert-polman/;88
 F-9245-2010;Xiaoliang Qi;https://publons.com/researcher/2825099/xiaoliang-qi/;49
 O-1028-2015;Dong Qian;https://publons.com/researcher/2341493/dong-qian/;31
+# Query for Didier Queloz
+# AUTHOR: Queloz, D.
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/25433?SID=8AJAtnSXoyb88bPaByL
+# Personal homepage: https://www.astro.phy.cam.ac.uk/directory/prof-didier-queloz
+6593411ee5d1e2c070900279249dd1c0;Didier Queloz;https://app.webofknowledge.com/author/#/record/25433?SID=8AJAtnSXoyb88bPaByL;85;20191010160015
 G-3251-2010;Daniel C Ralph;https://publons.com/researcher/2822696/daniel-c-ralph/;49
 B-4275-2014;Zhifeng Ren;https://publons.com/researcher/1639408/zhifeng-ren/;85
 L-2798-2016;John Rogers;https://publons.com/researcher/2234617/john-rogers/;127
@@ -130,7 +209,12 @@ L-3270-2016;Vlatko Vedral;https://publons.com/researcher/2234201/vlatko-vedral/;
 I-5727-2015;Feng wang;https://publons.com/researcher/2383468/feng-wang/;54
 C-4555-2012;Gongming Wang;https://publons.com/researcher/2746022/gongming-wang/;45
 C-4156-2014;Lili Wang;https://publons.com/researcher/2556520/lili-wang/;32
-E-8392-2010;Xinran Wang;https://publons.com/researcher/2833048/xinran-wang/;31
+# Query for Xinran Wang
+# AUTHOR: Wang, Xinran
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Source of h-index: https://app.webofknowledge.com/author/#/record/613553?SID=7CjYmZJRd89FJwWEyvS
+# Publons profile: https://publons.com/researcher/2833048/xinran-wang/
+E-8392-2010;Xinran Wang;https://app.webofknowledge.com/author/#/record/613553?SID=7CjYmZJRd89FJwWEyvS;42;20191010155244
 E-2176-2011;Zhong Lin (Z.L.) Wang;https://publons.com/researcher/2789625/zhong-lin-zl-wang/;195
 H-2825-2011;Kenji WATANABE;https://publons.com/researcher/2767349/kenji-watanabe/;76
 O-2637-2015;Fengnian Xia;https://publons.com/researcher/2340060/fengnian-xia/;46
