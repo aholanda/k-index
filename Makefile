@@ -1,4 +1,4 @@
-CFLAGS := -g
+CFLAGS := -g -Wall
 PKG := apt
 INSTALL := install
 WINCC := x86_64-w64-mingw32-gcc
