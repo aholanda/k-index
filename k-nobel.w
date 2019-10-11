@@ -9,8 +9,9 @@ The program has the following structure:
 @c
 #include <stdio.h>
 #include <stdlib.h>
-@<Include files@>@;
+@<Include headers@>@;
 @<Macro declarations@>@;
+@<Type definitions@>@;
 @<Data structures@>@;
 @<Internal variables@>@;
 @<Static functions@>@;
@@ -19,6 +20,7 @@ The program has the following structure:
 int main(int argc, char **argv) {
     @<Local variables@>@;
     @<Parse program arguments@>@;
+    @<Initialize the variables that need memory allocation@>@;
     @<Load the ids of Nobel Laureates@>@;
     @<Load authors information@>@;
     @<Calculate K index@>@;
@@ -51,6 +53,34 @@ static void Fclose(FILE *f) {
        	  fclose(f);
 }
 
+@ The |mem_free| function check the nullity of the address pointed by
+|ptr| before deallocation.
+
+@<Static...@>=
+static void mem_free(void *ptr, int line) {
+     if (ptr) @\
+     	free(ptr);
+}
+
+@ @<Macro...@>=
+#define CALLOC(count,nbytes) mem_calloc((count), (nbytes), (int)__LINE__)
+
+@ @<Static...@>=
+static void *mem_calloc(int count, int nbytes, int line) {
+       void *ptr;
+       ptr = calloc(count, nbytes);
+       if (!ptr) {
+       	  fprintf(stderr, "%d: Null pointer\n", line), abort();
+       }
+       return ptr;
+}
+
+@ |FREE| macro wraps |mem_free| with proper arguments and zeroed
+|ptr|.
+
+@<Macro...@>=
+#define FREE(ptr) ((void)(mem_free((ptr), __LINE__), (ptr)=0))
+
 @ The |panic| function is used when the program enters in a condition
 that was not expected to be in. It stops the program execution and
 prints a message |msg|. If there was a sure expectation that nothing
@@ -63,8 +93,8 @@ bad can occurs, a definition of |NDEBUG| as macro turn off the
 #define panic(msg) ((void)0)
 #else
 extern void panic(int msg);
-#define panic(msg) (fprintf(stderr, "%s:%d: PANIC: %s\n", \
-       __FILE__, (int)__LINE__, msg), abort())
+#define panic(msg) (fprintf(stderr, "%d: PANIC: %s\n", \
+           (int)__LINE__, msg), abort())
 #endif
 
 @* Verbose mode. The flag {\tt -v} is provided to print the existing comments
@@ -189,7 +219,7 @@ static void queue_reset() {
  ''Z-1111-1900.tsv''. The data files were saved inside in the value of
  |DATA_DIRECTORY| macro directory.
 
-@d DATA_DIRECTORY "data/"
+@d DATA_DIRECTORY "data"
 
 @* Fetching authors' record. The macro |AUTHORS_DATA_FN| is set with
  the file name that contains information about researchers
@@ -204,14 +234,14 @@ static void queue_reset() {
 @d MAX_STR_LEN 256
 
 @<Data structures@>=
-struct author {
+typedef struct author_struct {
     char name[MAX_STR_LEN];
     char researchid[MAX_STR_LEN];
     char url[MAX_STR_LEN];
     int h;
     int k;
     char timestamp[MAX_STR_LEN]; /* last modification of record */
-};
+} Author;
 
 @ |MAX_LINE_LEN| is the maximum length of each line, the value is very
 high because some papers have too many authors.
@@ -219,10 +249,9 @@ high because some papers have too many authors.
 @d MAX_LINE_LEN 1<<16
 
 @<Local...@>=
- struct author *aut; /* temporary variable */
- char *fn, *p; /* file name and generic pointer */
+ char *fn; /* file name */
  FILE *fp; /* file pointer */
- char buffer[MAX_STR_LEN]; /* buffer to store strings */
+ char buffer[MAX_LINE_LEN]; /* buffer to store strings */
  char line[MAX_LINE_LEN]; /* store file lines */
  int i=0, j=0; /* general-purpose counters */
 
@@ -231,14 +260,22 @@ high because some papers have too many authors.
  at the time it is read.
 
 @<Internal...@>=
-static struct author **authors; /* store authors' info */
-static int A=0; /* number of authors */
+static Array *authors; /* store authors' info */
+
+@ The maximum number of authors is dictated by the macro
+|MAX_N_AUTHORS| and the array of |authors| is initialized using
+this value.
+
+@D MAX_N_AUTHORS 0x2000
+
+@<Initialize...@>=
+authors = Array_new(MAX_N_AUTHORS, sizeof(Author));
 
 @ Authors basic information was picked from the Web of Science page,
 more specifically at \hfil\break {\tt
 https://hcr.clarivate.com/\#categories\%3Dphysics} that is the page of
 most cited authors in physics. They are stored in a file named
-|authors.idx| that is openned to load this information.
+|authors.idx| that is opened to load this information.
 
 @<Load authors info...@>=
 fp = Fopen(AUTHORS_DATA_FN, "r"); @/
@@ -246,26 +283,14 @@ while (fgets(line, MAX_LINE_LEN, fp) != NULL) { @/
       if (is_comment(line)) @/
       	 continue; @/
 
-      @<Reallocate the array of authors structure with to pointer elements@>@;
       @<Begin to fill authors structure@>@;
-
 }
 Fclose(fp);
 
-@ To add a new author to the |authors| array, a reallocation of space
-to it is needed because the array has the capacity exactly equals to
-the current number of authors.
+@ Memory allocated for the array of pointers |authors| is freed.
 
-@<Reallocate the array of authors...@>=
- authors = (struct author**)realloc(authors, get_no_authors()*sizeof(struct author*));
-
-@ The number of research authors is calculated by adding one to global
-variable |A| that is the next free array index.
-
-@<Static...@>=
-static int get_no_authors() {
-       return A+1;
-}
+@<Free up memory@>=
+Array_free(authors);
 
 @ @<Include...@>=
 #include <string.h> /* strtok() */
@@ -287,78 +312,172 @@ field in the structure.
 @d IDX_SEP ";\n"
 
 @<Begin to fill authors structure@>=
-aut = (struct author*)malloc(sizeof(struct author));
 i = 0; /* information index */
-char *p;
-p = strtok(line, IDX_SEP);
-while (p != NULL) {
+ptr = strtok(line, IDX_SEP);
+while (ptr != NULL) {
     switch(i) {
         case 0:
-        strncpy(aut->researchid, p, MAX_STR_LEN);
+        strncpy(aut.researchid, ptr, MAX_STR_LEN);
         break;
         case 1:
-        strncpy(aut->name, p, MAX_STR_LEN);
+        strncpy(aut.name, ptr, MAX_STR_LEN);
         break;
         case 2:
-        strncpy(aut->url, p, MAX_STR_LEN);
+        strncpy(aut.url, ptr, MAX_STR_LEN);
         break;
         case 3:
-        aut->h = atoi(p);
-	if (aut->h <= 0) {
-	   fprintf(stderr, "==> h=%d <==\n");
+        aut.h = atoi(ptr);
+	if (aut.h <= 0) {
+	   fprintf(stderr, "==> h=%d <==\n", aut.h);
 	   panic("Wrong value of h-index, run confess mode.");
 	}
+	/* Initialize K too */
+	aut.k = 0;
         break;
         case 4:
-        strncpy(aut->timestamp, p, MAX_STR_LEN);
+        strncpy(aut.timestamp, ptr, MAX_STR_LEN);
         break;
         default:
         break;
     }
-    p = strtok(NULL, IDX_SEP);
+    ptr = strtok(NULL, IDX_SEP);
     i++;
 }
 
-if (!is_nobel_laureate(aut)) {
-   authors[A++] = aut;
+if (!is_nobel_laureate(&aut)) {
+   Array_append(authors, &aut);
 }
+
+@ |aut| is used to point to new allocated |Author| structure adress
+while the fields are assigned with the proper values.
+
+@<Local...@>=
+Author aut; /* temporary variable */
 
 @ In all custom files used to parse the data, the hash character ''\#''
 is used to indicate that after it the following tokens must be
 interpreted as comments.
 
 @<Static...@>=
-int is_comment(char *line) {
+int is_comment(char *line) { @/
     if (!line)
-       goto exit_is_comment;
+       goto exit_is_comment; @/
 
-      if (line[0] == '#') {
+      if (line[0] == '#') { @/
             if (verbose)
-      	       printf("%s", line);
+      	       fprintf(stderr, "%s", line); @/
 
 	    return 1;
-     }
+     } @/
 
     exit_is_comment:
       return 0;
 }
 
-@* Fetching Nobel Laureates. We have to discard researchers that
-already was laureated with the Nobel Prize. Up to 2018, there was 935
-laureates that awarded Nobel Prize. We put more chairs in the room to
-accomodate future laureated researchers. A simple array is used to
-store the IDs and a linear search is performed. As the number of
-winners is not high, this simple scheme, even though not so efficient,
-is used to avoid complexities.
+@* Fetching Nobel laureates. We have to discard researchers that
+already was awarded with the Nobel Prize. Up to 2018, there was 935
+laureates. We put more chairs in the room to accommodate future
+laureates. A simple array is used to store the IDs and a linear search
+is performed. As the number of winners is not high, this simple
+scheme, even though not so efficient, is used to avoid complexities.
 
 @d N_LAUREATES 935
 @d MORE_ROOM 128
 
+@ The Nobel Laureates identifier are inserted in the |list| array;
+
 @<Internal...@>=
-static struct arr {
-       char array[N_LAUREATES+MORE_ROOM][MAX_STR_LEN];
-       int n; /* number of elements used */
-} list;
+static Array *list;
+
+@ The |Array| data structure is used to manage sequential allocation
+ of related elements. The data is copied to |array| field, the |cap|
+ field is the maximum number of elements provided by the array,
+ |length| is the number of elements occupied in the array and |size|
+ is the number of bytes occupied by each element. All elements are of
+ the same size.
+
+@<Type...@>=
+typedef struct array_struct {
+       void *array;
+       int cap; /* capacity of the array in number of elements */
+       int length; /* number of elements used */
+       int size; /* size in bytes of each element of the array */
+} Array;
+
+@ To create an array, memory is allocated for the structure and the
+data.
+
+@<Static...@>=
+static Array *Array_new(int capacity, int size) {
+       Array *ary;
+       ary = CALLOC(1, sizeof(Array));
+       ary->array = CALLOC(capacity, size);
+       ary->cap = capacity;
+       ary->size = size;
+       ary->length = 0;
+       return ary;
+}
+
+@ An element is get by accessing the ith element in the
+array taking into account the size of each element.
+
+@<Static...@>=
+static void *Array_get(Array *ary, int i) {
+       assert(ary);
+       assert(i >= 0 && i < ary->length);
+       return ary->array + i*ary->size;
+}
+
+@ An element is put in the array by copying the bytes of the
+element |elem| starting at the proper position |i| and taking
+into account the size of each element.
+
+@<Static...@>=
+static void Array_put(Array *ary, int i, void *elem) {
+       assert(ary);
+       assert(i >= 0 && i < ary->cap);
+       assert(elem);
+       memcpy(ary->array + i*ary->size, elem, ary->size);
+}
+
+@ @<Static...@>=
+static void Array_append(Array *ary, void *elem) {
+       assert(ary);
+       assert(elem);
+       memcpy(ary->array + ary->length*ary->size, elem, ary->size);
+       ary->length++;
+}
+
+@ Memory of array structure are freed by deallocating the data field
+|array| and the structure itself.
+
+@<Static...@>=
+static void Array_free(Array *ary) {
+       FREE(ary->array);
+       FREE(ary);
+}
+
+@ |Array_length| returns the number of elements in the |array|.
+
+@<Static...@>=
+static int Array_length(Array *array) {
+       assert(array);
+       assert(array->length >= 0);
+       return array->length;
+}
+
+@ @<Static...@>=
+static int Array_size(Array *array) {
+       assert(array);
+       assert(array->size > 0);
+       return array->size;
+}
+
+@ The function |assert| is used to check some invariants or integrity
+constraints of the data.
+
+@<Include...@>=
+#include <assert.h>
 
 @ A file |NOBEL_FN| with the identification number (id) of the Nobel
 Laureates is used to check if the researcher already win the prize.
@@ -375,28 +494,36 @@ while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
       /* Remove the new line */
       line[strcspn(line, "\r\n")] = 0;
 
-      @<Insert research id in the list@>@;
+      @<Insert research id...@>@;
 }
 Fclose(fp);
+
+@ The |list| array is initialized with enough space to put lareuates.
+
+@<Initialize...@>=
+list = Array_new(N_LAUREATES+MORE_ROOM, MAX_STR_LEN);
 
 @ Each new Laureate id is inserted in the array list and the number of
 elements in the list is incremented. No overflow checking is done.
 
-@<Insert research id in the list@>=
-strncpy(list.array[list.n++], line, sizeof(line));
+@<Insert research id at the end of the list@>=
+Array_append(list, line);
 
-@ The function |is_nobel_laureate| check in the laureated list with
+@ @<Free up memory@>=
+ Array_free(list);
+
+@ The function |is_nobel_laureate| check in the list od laureates with
 IDs if the author |a| id is in the list. The string comparison does
 not take into account if an id is prefix of another one because this
 is very unlikely to occur.
 
 @<Static...@>=
-static int is_nobel_laureate(struct author *a) {
+static int is_nobel_laureate(Author *aut) {
        int i;
-       char *id = a->researchid;
+       char *id = aut->researchid;
 
-       for (i=0; i<list.n; i++) {
-       	   if (strncmp(list.array[i], id, sizeof(id))==0)
+       for (i=0; i<list->length; i++) {
+       	   if (strncmp(Array_get(list, i), id, MAX_STR_LEN)==0)
 	      return 1;
        }
        return 0;
@@ -416,7 +543,7 @@ recognition'', {\sl Physica~A\/ \bf 491}~(1), 632--640].
 @^Kinouch, Osame@>
 @^Soares, Leonardo D. H.@>
 
-@* $h$-index. The number of papers is in decreasing order of citations
+@* h-index. The number of papers is in decreasing order of citations
 that the number of citations is greater than the paper position is the
 $h$-index.  On Web of Science homepage, the procedure to find the $h$ of
 an author is as follows:
@@ -432,7 +559,7 @@ an author is as follows:
 The $h$-index value is stored in the author record structure and saved
 in ``authors.idx'' file.
 
-@* $K$-index. If an author receives at least K citations, where each
+@* K-index. If an author receives at least K citations, where each
 one of these K citations have get at least K citations, then the
 author's $K$-index was found. On Web of Science homepage, the procedure
 to find the K of an author looks like below:
@@ -454,19 +581,23 @@ of 5.000 records, where each field is separated by one or more tabs
 that is assigned to the macro |TSV_SEP|.
 
 @ @<Calculate K index@>=
-for (i=0; i<A; i++) {/* for each author */
+N = Array_length(authors);
+for (i=0; i<N; i++) {/* for each author */
     @<Process tsv file@>@;
 }
+
+@ @<Local...@>=
+int N=0;
 
 @ To open the proper file the Researcher ID is concatenated with
 |DATA_DIRECTORY| as prefix and the file extension |K_EXT| as suffix.
 
-@d K_EXT ".tsv"
+@d K_EXT "tsv"
 
 @<Process tsv file@>=
-strncpy(buffer, DATA_DIRECTORY, sizeof(DATA_DIRECTORY));
-strncat(buffer, authors[i]->researchid, sizeof(authors[i]->researchid));
-strncat(buffer, K_EXT, sizeof(K_EXT));
+paut = Array_get(authors, i);
+snprintf(buffer, MAX_LINE_LEN, "%s/%s.%s", DATA_DIRECTORY, \
+		 paut->researchid, K_EXT);
 fn = buffer;
 fp = Fopen(fn, "r");
 
@@ -474,7 +605,7 @@ fp = Fopen(fn, "r");
  ncits=0, old_ncits = 1000000;
 
 if (confess) {
-     fprintf(stderr, "%d. %s\n", i+1, authors[i]->name);
+     fprintf(stderr, "%d. %s\n", i+1, paut->name);
       queue_reset();
 }
 
@@ -500,33 +631,33 @@ if (strstr(line, "PT\t") != NULL) {
     @<Find the citings and check if the K-index was found@>@;
 }
 
-@ |K_SKIP| represents the fields to be skipped before {\it Times Cited\/}
+@ |SKIP| represents the fields to be skipped before {\it Times Cited\/}
 value is reached. Its value is not fixed and for this reason it was
 implemented a tricky way to get the {\it Times Cited\/} value: after
-|K_SKIP| is passed, each field is accumulated in a queue and when the
+|SKIP| is passed, each field is accumulated in a queue and when the
 end of the record is reached, the queue is dequeue three times to get
 the {\it Times Cited\/} value. This position offset of {\it Times
 Cited\/} value from the end is fixed for all files.
 
 @d TSV_SEP "\t"
-@d K_SKIP 7 /* number of fields that can be skipped with safety */
+@d SKIP 7 /* number of fields that can be skipped with safety */
 
 @<Find the citings and check if the K-index was found@>=
-{ int ncits=0;
+{ ncits=0;
   j=0;
-  p = strtok(line, TSV_SEP);
-  while (p != NULL) {
-	if (j > K_SKIP) {
-	      push(p);
+  ptr = strtok(line, TSV_SEP);
+  while (ptr != NULL) {
+	if (j > SKIP) {
+	      push(ptr);
 	}
 	j++;
-        p = strtok(NULL, TSV_SEP);
+        ptr = strtok(NULL, TSV_SEP);
   }
 
   for (j=0; j<3; j++) @/
-      p = pop();
+      ptr = pop();
 
-   ncits = atoi(p);
+   ncits = atoi(ptr);
    stack_reset();
 
    @<Check parsing integrity of citings@>@;
@@ -536,7 +667,9 @@ Cited\/} value from the end is fixed for all files.
 
    if (pos > ncits) { /* found k */
        pos--;
-       authors[i]->k = pos;
+
+       paut = Array_get(authors, i);
+       paut->k = pos;
 
        @<Write the last values@>@;
 
@@ -544,6 +677,9 @@ Cited\/} value from the end is fixed for all files.
   }
   pos++;
 }
+
+@ @<Local var...@>=
+char *ptr; /* Generic pointer */
 
 @ The articles are listed in descending order of number of citings.
  For this reason, the old value of number of citings |old_ncits|
@@ -565,7 +701,8 @@ if (confess) @/
 if (confess) { @/
    register int ii;
 
-   fprintf(stderr, "==> found K=%d <==\n <> Last values\n", authors[i]->k);
+   paut = Array_get(authors, i);
+   fprintf(stderr, "==> found K=%d <==\n <> Last values\n", paut->k);
    for (ii=0; ii<PREV_NVALS; ii++) {
        if (queue_is_empty())
        	  break;
@@ -591,26 +728,26 @@ static struct {
        int top;
 } stack;
 
-@ Elements are inserted at the top of the stack by invoking |enstack|
-and using |char *p| as parameter. The index |idx| is incremented to
-the number of elements in the stack and |top-1| is the index of the
+@ Elements are inserted at the top of the stack by invoking |push| and
+using |char *ptr| as parameter. The index |idx| is incremented to the
+number of elements in the stack and |top-1| is the index of the
 element in the top.
 
 @<Static...@>=
-static void push(char *p) {
-       if (p == NULL) {
-          panic("Tring to push NULL in the stack");
+static void push(char *ptr) {
+       if (ptr == NULL) {
+          panic("Tring to push NULL value to the stack");
 	}
 
- 	stack.data[stack.top++] = p;
+ 	stack.data[stack.top++] = ptr;
 
 	if (stack.top == STACK_LEN) {
 	   panic("Stack overflow");
 	}
 }
 
-@ Elements from the top of the stack are removed by |pop|
-function. If there is no element in the stack, |NULL| is returned.
+@ Elements from the top of the stack are removed by |pop| function. If
+there is no element in the stack, |NULL| is returned.
 
 @<Static...@>=
 static char* pop() {
@@ -633,13 +770,21 @@ is used to simplify the code and according to the number of entries
 is not so large.
 
 @<Sort the authors@>=
-for (i=1; i<A; i++) {
-    aut = authors[i];
-    for (j=i-1; j>=0 && aut->k>authors[j]->k; j--) {
-    	authors[j+1] = authors[j];
+N = Array_length(authors);
+for (i=1; i<N; i++) {
+    memcpy(&aut, Array_get(authors, i), Array_size(authors));
+    for (j=i-1; j>=0; j--) {
+    	qaut = (Author*)Array_get(authors, j);
+	if (aut.k < qaut->k)
+	   break;
+
+    	Array_put(authors, j+1, qaut);
     }
-    authors[j+1] = aut;
+    Array_put(authors, j+1, &aut);
 }
+
+@ @<Local...@>=
+register Author *qaut;
 
 @** Output. The results are written as a table in markdown format to
 the file name assigned to |RANK_FN|.  A space is needed between the
@@ -655,14 +800,18 @@ if (!fp) {
 }
 fprintf(fp, "| N | Author | h | K |\n");
 fprintf(fp, "|---|--------|---|---|\n");
-for (i=0; i<A; i++) {
+N = Array_length(authors);
+for (i=0; i<N; i++) {
+    paut = Array_get(authors, i);
     fprintf(fp, "| %d | [%s](%s) | %d | %d |\n",
     	i+1,
-       authors[i]->name, authors[i]->url,
-       authors[i]->h, authors[i]->k);
+       paut->name, paut->url, paut->h, paut->k);
 }
 fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", RANK_FN);
+
+@ @<Local...@>=
+Author *paut;
 
 @ A table with the twelve larger $K$s to be included in the manuscript
 is written in LaTeX format.
@@ -677,24 +826,15 @@ if (!fp) {
 fprintf(fp, "\\begin{tabular}{cccc} \\\\ \\hline\n");
 fprintf(fp, "\\bf N & \\bf Author &\\bg h &\\bf K \\\\ \\hline\n");
 for (i=0; i<12; i++) {
+    paut = Array_get(authors, i);
     fprintf(fp, " %d & %s & %d & %d \\\\\n",
        i+1,
-       authors[i]->name,
-       authors[i]->h,
-       authors[i]->k);
+       paut->name,
+       paut->h,
+       paut->k);
 }
 fprintf(fp, "\\hline\\end{tabular}\n");
 fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
-
-
-@ Memory allocated for the array of pointers |authors| is freed.  As
-the memory deallocation is the last task to be executed, a simple
-usage notification is appended before the task.
-
-@<Free up memory@>=
-for (i=0; i<A; i++)
-    free(authors[i]);
-free(authors);
 
 @** Index.
