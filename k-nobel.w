@@ -230,14 +230,12 @@ static void queue_reset() {
  Web of Science page. The author's $h$-index and $K$-index are
  assigned to the fields |h| and |K|, respectively.
 
-@d AUTHORS_DATA_FN "authors.idx"
+@d AUTHORS_DATA_FN "ids.idx"
 @d MAX_STR_LEN 256
 
 @<Data structures@>=
 typedef struct author_struct {
-    char name[MAX_STR_LEN];
-    char researchid[MAX_STR_LEN];
-    char url[MAX_STR_LEN];
+    char id[MAX_STR_LEN];
     int h;
     int k;
     char timestamp[MAX_STR_LEN]; /* last modification of record */
@@ -275,7 +273,7 @@ authors = Array_new(MAX_N_AUTHORS, sizeof(Author));
 more specifically at \hfil\break {\tt
 https://hcr.clarivate.com/\#categories\%3Dphysics} that is the page of
 most cited authors in physics. They are stored in a file named
-|authors.idx| that is opened to load this information.
+|ids.idx| that is opened to load this information.
 
 @<Load authors info...@>=
 fp = Fopen(AUTHORS_DATA_FN, "r"); @/
@@ -317,15 +315,9 @@ ptr = strtok(line, IDX_SEP);
 while (ptr != NULL) {
     switch(i) {
         case 0:
-        strncpy(aut.researchid, ptr, MAX_STR_LEN);
+        strncpy(aut.id, ptr, MAX_STR_LEN);
         break;
         case 1:
-        strncpy(aut.name, ptr, MAX_STR_LEN);
-        break;
-        case 2:
-        strncpy(aut.url, ptr, MAX_STR_LEN);
-        break;
-        case 3:
         aut.h = atoi(ptr);
 	if (aut.h <= 0) {
 	   fprintf(stderr, "==> h=%d <==\n", aut.h);
@@ -344,9 +336,8 @@ while (ptr != NULL) {
     i++;
 }
 
-if (!is_nobel_laureate(&aut)) {
-   Array_append(authors, &aut);
-}
+ Array_append(authors, &aut);
+
 
 @ |aut| is used to point to new allocated |Author| structure adress
 while the fields are assigned with the proper values.
@@ -483,7 +474,7 @@ constraints of the data.
 Laureates is used to check if the researcher already win the prize.
 
 /* file name with ids of Nobel Laureates */
-@d NOBEL_FN "laureates.dat"
+@d NOBEL_FN "laureates_in.dat"
 
 @<Load the ids of Nobel Laureates@>=
 fp = Fopen(NOBEL_FN, "r");
@@ -494,7 +485,7 @@ while (fgets(line, MAX_LINE_LEN, fp) != NULL) {
       /* Remove the new line */
       line[strcspn(line, "\r\n")] = 0;
 
-      @<Insert research id...@>@;
+      @<Insert the hash id...@>@;
 }
 Fclose(fp);
 
@@ -506,7 +497,7 @@ list = Array_new(N_LAUREATES+MORE_ROOM, MAX_STR_LEN);
 @ Each new Laureate id is inserted in the array list and the number of
 elements in the list is incremented. No overflow checking is done.
 
-@<Insert research id at the end of the list@>=
+@<Insert the hash id at the end of the list@>=
 Array_append(list, line);
 
 @ @<Free up memory@>=
@@ -520,7 +511,7 @@ is very unlikely to occur.
 @<Static...@>=
 static int is_nobel_laureate(Author *aut) {
        int i;
-       char *id = aut->researchid;
+       char *id = aut->id;
 
        for (i=0; i<list->length; i++) {
        	   if (strncmp(Array_get(list, i), id, MAX_STR_LEN)==0)
@@ -597,7 +588,7 @@ int N=0;
 @<Process tsv file@>=
 paut = Array_get(authors, i);
 snprintf(buffer, MAX_LINE_LEN, "%s/%s.%s", DATA_DIRECTORY, \
-		 paut->researchid, K_EXT);
+		 paut->id, K_EXT);
 fn = buffer;
 fp = Fopen(fn, "r");
 
@@ -605,7 +596,7 @@ fp = Fopen(fn, "r");
  ncits=0, old_ncits = 1000000;
 
 if (confess) {
-     fprintf(stderr, "%d. %s\n", i+1, paut->name);
+     fprintf(stderr, "%d. %s\n", i+1, paut->id);
       queue_reset();
 }
 
@@ -793,21 +784,23 @@ bars and the content.
 @d RANK_FN "k-nobel.md"
 
 @<Write results to a file@>=
-fp = fopen(RANK_FN, "w");
-if (!fp) {
-   perror(fn);
-   exit(-4);
-}
+fp = Fopen(RANK_FN, "w");
 fprintf(fp, "| N | Author | h | K |\n");
 fprintf(fp, "|---|--------|---|---|\n");
 N = Array_length(authors);
 for (i=0; i<N; i++) {
     paut = Array_get(authors, i);
-    fprintf(fp, "| %d | [%s](%s) | %d | %d |\n",
-    	i+1,
-       paut->name, paut->url, paut->h, paut->k);
+
+    /* Mark Nobel Laureates */
+    if (is_nobel_laureate(paut))
+	ptr = "**"; @\
+    else
+	ptr = ""; @\
+
+    fprintf(fp, "| %d | %s%s%s | %d | %d |\n",
+    	i+1, ptr, paut->id, ptr, paut->h, paut->k);
 }
-fclose(fp);
+Fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", RANK_FN);
 
 @ @<Local...@>=
@@ -818,23 +811,19 @@ is written in LaTeX format.
 
 @<Write a table with the twelve larger ks in latex format@>=
 fn = "table.tex";
-fp = fopen(fn, "w");
-if (!fp) {
-   perror(fn);
-   exit(-8);
-}
+fp = Fopen(fn, "w");
 fprintf(fp, "\\begin{tabular}{cccc} \\\\ \\hline\n");
 fprintf(fp, "\\bf N & \\bf Author &\\bg h &\\bf K \\\\ \\hline\n");
 for (i=0; i<12; i++) {
     paut = Array_get(authors, i);
     fprintf(fp, " %d & %s & %d & %d \\\\\n",
        i+1,
-       paut->name,
+       paut->id,
        paut->h,
        paut->k);
 }
 fprintf(fp, "\\hline\\end{tabular}\n");
-fclose(fp);
+Fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", fn);
 
 @** Index.
