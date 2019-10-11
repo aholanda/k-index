@@ -24,9 +24,9 @@
 | 22 | [Georg Kresse](http://orcid.org/0000-0001-9102-4259) | 100 | 382 |
 | 23 | [P J E Peebles](https://app.webofknowledge.com/author/#/record/97459?SID=7CjYmZJRd89FJwWEyvS) | 73 | 380 |
 | 24 | [Peter Zoller](https://publons.com/researcher/2465652/peter-zoller/) | 117 | 379 |
-| 25 | [Xinran Wang](https://app.webofknowledge.com/author/#/record/613553?SID=7CjYmZJRd89FJwWEyvS) | 42 | 373 |
-| 26 | [Nuno M R Peres](https://publons.com/researcher/2884095/nuno-m-r-peres/) | 35 | 364 |
-| 27 | [Peter Blake](https://publons.com/researcher/2832922/peter-blake/) | 21 | 363 |
+| 25 | [Peter Blake](https://app.webofknowledge.com/author/#/record/298790?SID=7BEnhjRUMGCYrT55WWV) | 36 | 375 |
+| 26 | [Xinran Wang](https://app.webofknowledge.com/author/#/record/613553?SID=7CjYmZJRd89FJwWEyvS) | 42 | 373 |
+| 27 | [Nuno M R Peres](https://publons.com/researcher/2884095/nuno-m-r-peres/) | 35 | 364 |
 | 28 | [Gang Li](https://publons.com/researcher/1435966/gang-li/) | 66 | 362 |
 | 29 | [Jong-Hyun Ahn](https://publons.com/researcher/2228321/jong-hyun-ahn/) | 56 | 357 |
 | 30 | [Jannik C Meyer](https://publons.com/researcher/2705135/jannik-c-meyer/) | 43 | 355 |
@@ -67,13 +67,13 @@
 | 65 | [Maciej Lewenstein](https://publons.com/researcher/1347157/maciej-lewenstein/) | 92 | 280 |
 | 66 | [Yonggang Huang](https://publons.com/researcher/2866086/yonggang-huang/) | 103 | 278 |
 | 67 | [Yumeng Shi](https://publons.com/researcher/1640912/yumeng-shi/) | 41 | 278 |
-| 68 | [Qian Niu](https://publons.com/researcher/2631592/qian-niu/) | 71 | 276 |
-| 69 | [Albert Polman](https://publons.com/researcher/2797751/albert-polman/) | 88 | 276 |
-| 70 | [HIdeo Hosono](https://publons.com/researcher/1639106/hideo-hosono/) | 103 | 275 |
-| 71 | [Arend M van der Zande](https://publons.com/researcher/2306966/arend-m-van-der-zande/) | 30 | 273 |
+| 68 | [Arend M van der Zande](https://app.webofknowledge.com/author/#/record/877257?SID=7BEnhjRUMGCYrT55WWV) | 32 | 278 |
+| 69 | [Qian Niu](https://publons.com/researcher/2631592/qian-niu/) | 71 | 276 |
+| 70 | [Albert Polman](https://publons.com/researcher/2797751/albert-polman/) | 88 | 276 |
+| 71 | [HIdeo Hosono](https://publons.com/researcher/1639106/hideo-hosono/) | 103 | 275 |
 | 72 | [Thomas K Seyller](https://publons.com/researcher/2777839/thomas-k-seyller/) | 50 | 268 |
-| 73 | [Chris G Van de Walle](https://publons.com/researcher/2759444/chris-g-van-de-walle/) | 93 | 262 |
-| 74 | [Çağlar Ö Girit](https://publons.com/researcher/2547932/caglar-o-girit/) | 26 | 259 |
+| 73 | [Çağlar Ö Girit](https://app.webofknowledge.com/author/#/record/930420?SID=7BEnhjRUMGCYrT55WWV) | 28 | 267 |
+| 74 | [Chris G Van de Walle](https://publons.com/researcher/2759444/chris-g-van-de-walle/) | 93 | 262 |
 | 75 | [Alexander A. Balandin](https://publons.com/researcher/2777132/alexander-a-balandin/) | 44 | 253 |
 | 76 | [Leon Balents](http://bit.ly/2OzIRzP) | 42 | 253 |
 | 77 | [Michel Mayor](https://app.webofknowledge.com/author/#/record/49030?SID=7CjYmZJRd89FJwWEyvS) | 53 | 252 |
@@ -115,11 +115,11 @@
 | 113 | [B. Andrei Bernevig](https://phy.princeton.edu/people/bogdan-bernevig) | 48 | 193 |
 | 114 | [Yew san Hor](https://publons.com/researcher/2026717/yew-san-hor/) | 35 | 191 |
 | 115 | [Dimitri N. Basov](https://infrared.cni.columbia.edu/basov/) | 51 | 187 |
-| 116 | [Dong Qian](https://publons.com/researcher/2341493/dong-qian/) | 31 | 187 |
-| 117 | [Tobias J Kippenberg](https://publons.com/researcher/2673513/tobias-j-kippenberg/) | 48 | 185 |
-| 118 | [shuang zhang](https://publons.com/researcher/2772929/shuang-zhang/) | 36 | 185 |
-| 119 | [Hsin Lin](https://publons.com/researcher/2719450/hsin-lin/) | 54 | 183 |
-| 120 | [CHAOXING LIU](https://publons.com/researcher/2672840/chaoxing-liu/) | 21 | 180 |
+| 116 | [CHAOXING LIU](https://app.webofknowledge.com/author/#/record/502320?SID=7BEnhjRUMGCYrT55WWV) | 34 | 187 |
+| 117 | [Dong Qian](https://publons.com/researcher/2341493/dong-qian/) | 31 | 187 |
+| 118 | [Tobias J Kippenberg](https://publons.com/researcher/2673513/tobias-j-kippenberg/) | 48 | 185 |
+| 119 | [shuang zhang](https://publons.com/researcher/2772929/shuang-zhang/) | 36 | 185 |
+| 120 | [Hsin Lin](https://publons.com/researcher/2719450/hsin-lin/) | 54 | 183 |
 | 121 | [James Analytis](http://bit.ly/2ZiGemZ) | 47 | 178 |
 | 122 | [Jeremy L O'Brien](https://publons.com/researcher/2893734/jeremy-l-obrien/) | 45 | 178 |
 | 123 | [Yugui Yao](https://publons.com/researcher/1641653/yugui-yao/) | 47 | 178 |
