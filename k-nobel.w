@@ -96,8 +96,8 @@ Boolean variable used to mark the mode is |confess|.
 
 @d CONFESS_FLAG  "-vvv"
 
-@<Local var...@>=
-int confess;
+@<Internal...@>=
+static int confess=0;
 
 @ The program doesn't accept both flags, {\tt -v} and {\tt -vvv}, to
 avoid an output complexity in terms of information and to set a
