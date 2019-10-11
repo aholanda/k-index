@@ -16,13 +16,13 @@ k-nobel.exe: k-nobel.c
 k-nobel.pdf: k-nobel.tex
 	pdftex $<
 
-data: data.zip
+data: dataset.zip
 	unzip $<
 
 deps:
 	`which sudo` $(PKG) $(INSTALL) cwebx gcc gcc-mingw-w64-x86-64
 
-data.zip:
+dataset.zip:
 	wget --no-check-certificate -r $(DATA_URL) -O $@
 
 clean:
