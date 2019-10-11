@@ -59,7 +59,11 @@ B-7424-2008;Carlo W.J. Beenakker;https://publons.com/researcher/2885743/carlo-wj
 # AUTHOR: (Bernevig, B. Andrei)
 # Timespan: All years. Indexes: SCI-EXPANDED, SSCI, A&HCI, CPCI-S, CPCI-SSH, ESCI.
 e6cd4a7c8fa961ebf8076483e2e54a39;B. Andrei Bernevig;https://phy.princeton.edu/people/bogdan-bernevig;48;20191010140809
-E-8556-2010;Peter Blake;https://publons.com/researcher/2832922/peter-blake/;21;20191010140939
+# Query for Peter Blake
+# AUTHOR: Blake, P.
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Publons: https://publons.com/researcher/2832922/peter-blake/
+E-8556-2010;Peter Blake;https://app.webofknowledge.com/author/#/record/298790?SID=7BEnhjRUMGCYrT55WWV;36;20191011102630
 G-3174-2010;Immanuel Bloch;https://publons.com/researcher/2822764/immanuel-bloch/;72;20191010141107
 # Query for D.A. Bonn
 # AUTHOR: (Bonn, D A)
@@ -98,7 +102,11 @@ D-4132-2009;Zhong Fang;https://publons.com/researcher/2853649/zhong-fang/;73
 0000-0002-0272-5481;Luigi Frunzio;http://orcid.org/0000-0002-0272-5481;48
 E-7634-2010;Michael S. Fuhrer;https://publons.com/researcher/1540465/michael-s-fuhrer/;53
 J-7888-2012;Andre K. Geim;https://publons.com/researcher/2691072/andre-k-geim/;109
-D-4845-2014;Çağlar Ö Girit;https://publons.com/researcher/2547932/caglar-o-girit/;26
+# Query for Çağlar Ö Girit
+# AUTHOR: Girit, Caglar
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Publons: https://publons.com/researcher/2547932/caglar-o-girit/
+D-4845-2014;Çağlar Ö Girit;https://app.webofknowledge.com/author/#/record/930420?SID=7BEnhjRUMGCYrT55WWV;28;20191011101404
 # NOT_FOUND_IN_WOS
 #0000-0002-6470-5494;Steven Girvin;http://orcid.org/0000-0002-6470-5494;
 I-2512-2013;Roman Gorbachev;https://publons.com/researcher/2622598/roman-gorbachev/;38
@@ -140,7 +148,11 @@ D-5244-2011;Lain-Jong Li;https://publons.com/researcher/2794607/lain-jong-li/;79
 F-9568-2012;Hsin Lin;https://publons.com/researcher/2719450/hsin-lin/;54
 # NOT_FOUND_IN_WOS
 #D-5203-2013;Michal Lipson;https://publons.com/researcher/2656585/michal-lipson/
-B-3957-2013;CHAOXING LIU;https://publons.com/researcher/2672840/chaoxing-liu/;21
+# Query for CHAOXING LIU
+# AUTHOR: Liu, Chao-Xing
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Publons: https://publons.com/researcher/2672840/chaoxing-liu/
+B-3957-2013;CHAOXING LIU;https://app.webofknowledge.com/author/#/record/502320?SID=7BEnhjRUMGCYrT55WWV;34;20191011101800
 H-4352-2011;Zhuang Liu;https://publons.com/researcher/2766055/zhuang-liu/;112
 E-8388-2011;Wei D. Lu;https://publons.com/researcher/2785340/wei-d-lu/;52
 H-3090-2014;David G Mandrus;https://publons.com/researcher/2517211/david-g-mandrus/;65
@@ -230,5 +242,9 @@ G-5224-2011;shuang zhang;https://publons.com/researcher/2772929/shuang-zhang/;36
 F-6905-2011;Xiang Zhang;https://publons.com/researcher/2779096/xiang-zhang/;97
 O-1639-2014;Peter Zoller;https://publons.com/researcher/2465652/peter-zoller/;117
 E-5670-2011;Jeroen van den Brink;https://publons.com/researcher/2787570/jeroen-van-den-brink/;54
-C-1989-2016;Arend M van der Zande;https://publons.com/researcher/2306966/arend-m-van-der-zande/;30
+# Query for Arend M van der Zande
+# AUTHOR: van der Zande, Arend M.
+# Timespan: All years. Indexes: SCI-EXPANDED, ESCI, A&HCI, SSCI, CPCI-SSH, CPCI-S.
+# Publons: https://publons.com/researcher/2306966/arend-m-van-der-zande/
+C-1989-2016;Arend M van der Zande;https://app.webofknowledge.com/author/#/record/877257?SID=7BEnhjRUMGCYrT55WWV;32;20191011102156
 ##############################################################################
