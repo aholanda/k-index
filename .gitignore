@@ -1,4 +1,6 @@
+authors.idx
 data
+data.0
 data.zip
 k-nobel.c
 k-nobel.dvi
@@ -7,3 +9,5 @@ k-nobel.log
 k-nobel.scn
 k-nobel.tex
 k-nobel.toc
+genhash.pl
+md5.idx
