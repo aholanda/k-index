@@ -1,20 +1,28 @@
-@** Introduction. K-NOBEL is a project to try to predict the future
-Laureates of Nobel prize of Physics using $K$-index to rank the
-researchers. Another parameter, $h$-index, is used to evaluate the
-error threshold, since $h$-index is used by Web of Science as one of
-the indices to predict the Laureates of Nobel prize.
+\def\title{K-INDEX}
 
-The program has the following structure:
+@** Introduction. This is {\sc K-INDEX}, an implementation and a testbed
+ of a scientometric measure to rank research authors using the citations
+ of articles' citations. The testbed is its use to try to predict the
+ the recipient of scientific awards. We use the Web of Science data
+ as input and use the results for the prediction of Nobel Laureates
+ of Physics.
 
-@c
+@ The following code is structured in a way that each section has a
+well defined boundary in terms of use of variables and functionality.
+We try to separate the technicalities, like memory management, from
+logical statements related to the index calculation.
+
+@p
 #include <stdio.h>
 #include <stdlib.h>
+@h@#
 @<Include headers@>@;
 @<Macro declarations@>@;
 @<Type definitions@>@;
 @<Data structures@>@;
 @<Internal variables@>@;
 @<Static functions@>@;
+@<Functions@>@;
 
 @ @c
 int main(int argc, char **argv) {
@@ -28,12 +36,15 @@ int main(int argc, char **argv) {
     @<Write results to a file@>@;
     @<Write a table with the twelve larger ks in latex format@>@;
     @<Free up memory@>@;
-    @<Print information about flags@>@;
     return 0;
 }
 
 @ Some internal functions are defined to embed repetitive tasks like check null
 pointers and print error messages.
+
+@ |Fopen| function try to open a file named |filename| and if it fails
+the error message is thrown out, stopping the execution of the
+program.
 
 @<Static...@>=
 static FILE *Fopen(char *filename, char *mode) {
@@ -41,13 +52,15 @@ static FILE *Fopen(char *filename, char *mode) {
 
        f = fopen(filename, mode);
        if (!f) {
-       	  fprintf(stderr, "Could not open %s\n", filename);
-	  exit(-1);
+       	  panic("Could not open \"%s\"\n", filename);
        }
        return f;
 }
 
-@ @<Static...@>=
+@ The function |Fclose| tests it the file pointer in not null before
+closing it.
+
+@<Static...@>=
 static void Fclose(FILE *f) {
        if (f)
        	  fclose(f);
@@ -62,10 +75,17 @@ static void mem_free(void *ptr, int line) {
      	free(ptr);
 }
 
-@ @<Macro...@>=
+@ |CALLOC| macro hide the use of macro |__LINE__| that is the number
+of current line where it is used. When an memory allocation error
+occurs the line where |CALLOC| is used is informed by |mem_calloc|.
+
+@<Macro...@>=
 #define CALLOC(count,nbytes) mem_calloc((count), (nbytes), (int)__LINE__)
 
-@ @<Static...@>=
+@ The function |mem_calloc| is an wrapper to |calloc| to check it the
+pointer returned is not null.
+
+@<Static...@>=
 static void *mem_calloc(int count, int nbytes, int line) {
        void *ptr;
        ptr = calloc(count, nbytes);
@@ -93,130 +113,35 @@ bad can occurs, a definition of |NDEBUG| as macro turn off the
 #define panic(msg) ((void)0)
 #else
 extern void panic(int msg);
-#define panic(msg) (fprintf(stderr, "%d: PANIC: %s\n", \
-           (int)__LINE__, msg), abort())
+#define panic(fmt, ...) \
+	(fprintf(stderr, "%d:PANIC: " fmt, (int)__LINE__, ##__VA_ARGS__), abort())
 #endif
 
-@* Verbose mode. The flag {\tt -v} is provided to print the existing comments
-inside data files and any other useful information to the user.
-
-@d VERBOSE_FLAG  "-v"
-
-@<Parse program arguments@>=
-if (argc==2 && !strncmp(argv[1], VERBOSE_FLAG, 3)) @/
-   verbose = 1;
-
-@ The |verbose| Boolean variable marks if the output of the program is
-extended with the comments inside data files. The default behavior is
-to write to the output the name the generated files.
-
-@<Internal...@>=
-static int verbose=0;
-
-@ Warn the user about the {\tt -v} if the flag was not used.
-
-@<Print information about flags@>=
-if (!verbose) @/
-   fprintf(stderr, "- use \"%s -v\" to print information about data set.\n", argv[0]);
-
-@ The flag {\tt -vvv} causes the program to print the values of the
-indices moments before they are reached. It's used to check the
-correctness of the algorithms used to calculated the indices. The
-Boolean variable used to mark the mode is |confess|.
-
-@d CONFESS_FLAG  "-vvv"
-
-@<Internal...@>=
-static int confess=0;
-
-@ The program doesn't accept both flags, {\tt -v} and {\tt -vvv}, to
-avoid an output complexity in terms of information and to set a
-boundary between the two tasks.
-
-@<Parse program arguments@>=
-if (argc==2 && !strncmp(argv[1], CONFESS_FLAG, 5)) @/
-   	confess = 1;
-
-@ The user of the program is warned about the flag {\tt -vvv} if the
-  flag was not used.
-
-@<Print information about flags@>=
-if (!confess) @/
-   fprintf(stderr, "- use \"%s -vvv\" to show details about \
-K-index calculation.\n", argv[0]);
-
-@ In confess mode, a queue is necessary to not lost previous values of
-some variable already processed. The queue is implemented using a
-circular array where the field |front| is the index of the first
-element and |rear| the index of last element. There's no problem in
-overwriting some queue elements because only a limited number of
-values |PREV_NVALS| lesser than the queue length |QLEN| are of
-interest.
-
-@d QLEN 32 /* queue length */
-@d PREV_NVALS 5 /* number of elements of interest in the queue */
-
-@<Internal...@>=
-static struct queue_struct {
-       int array[QLEN];
-       int front, rear;
-} queue;
-
-@ Add the value |idx| in the rear of the queue.
-
-@<Static...@>=
-static void enqueue(int idx) {
-       queue.array[queue.rear++] = idx;
-
-       if (queue.rear == QLEN) @/
-       	   queue.rear = 0;
-}
-
-@ The function |queue_is_empty| returns 1 when the queue is empty.
-
-@<Static...@>=
-static int queue_is_empty() {
-        return queue.rear <= queue.front;
-}
-
-@ The function |dequeue_from_rear| removes the element in the rear of
-the queue returning it. There is no need to remove elements in front
-of the queue.
-
-@<Static...@>=
-static int dequeue_from_rear() {
-       int idx;
-
-       if (queue.rear <= queue.front) {
-       	  panic("Queue is empty");
-       }
-
-       idx = queue.array[--queue.rear];
-
-       return idx;
-}
-
-@ The queue fields |front| and |rear| are initialized using
-|queue_reset|.
-
-@<Static...@>=
-static void queue_reset() {
-       queue.front = queue.rear = 0;
-}
-
-@** Input data. The data to be processed comes from CSV
- (comma-separated values) and TSV (tab-separated vaules) files
- containing, among other data, the papers and its number of citations
- (CSV) or number of citings (TSV) of researchers. Each file stores
- data about one researcher.  The citing is the number of citations
- received by a paper that cites the researcher paper in question. The
- CSV files are used to calculate the $h$-index and TSV are used to
- find the $K$-index. An index file with author's identification and
- some information like his/her homepage is used to associate the data
+@** Input. The data to be processed comes from CSV (comma-separated
+ values) and TSV (tab-separated vaules) files containing, among other
+ data, the papers and its number of citations (CSV) or number of
+ citings (TSV) of researchers. Each file stores data about one
+ researcher.  The citing is the number of citations received by a
+ paper that cites the researcher paper in question. The CSV files are
+ used to calculate the $h$-index and TSV are used to find the
+ $K$-index. An index file with author's identification and some
+ information like his/her homepage is used to associate the data
  files. For example, an author with an Researcher ID equals to
- ''Z-1111-1900'' has the papers' citations in a file called
- ''Z-1111-1900.csv'' and the papers' citings in a file named
- ''Z-1111-1900.tsv''. The data files were saved inside in the value of
+ ''Z-1111-1900'' has the articles' citings in a file named
+ ''Z-1111-1900.txt''.
+
+@* One or more files as input.
+
+@<Parse program arguments@>=
+if (argc >= 2) {
+    for (i=1; i<argc; i++) {
+    	fn = argv[i];
+	fprintf(stderr, " %s, k=%d\n", fn, do_k(fn));
+    }
+    exit(1);
+}
+
+@* A directory with files as input. The data files were saved inside in the value of
  |DATA_DIRECTORY| macro directory.
 
 @d DATA_DIRECTORY "data"
@@ -230,7 +155,7 @@ static void queue_reset() {
  Web of Science page. The author's $h$-index and $K$-index are
  assigned to the fields |h| and |K|, respectively.
 
-@d AUTHORS_DATA_FN "ids.idx"
+@d AUTHORS_DATA_FN "identifiers.dat"
 @d MAX_STR_LEN 256
 
 @<Data structures@>=
@@ -247,10 +172,7 @@ high because some papers have too many authors.
 @d MAX_LINE_LEN 1<<16
 
 @<Local...@>=
- char *fn; /* file name */
- FILE *fp; /* file pointer */
  char buffer[MAX_LINE_LEN]; /* buffer to store strings */
- char line[MAX_LINE_LEN]; /* store file lines */
  int i=0, j=0; /* general-purpose counters */
 
 @ An array of structures is used to store the |authors|' information.
@@ -258,6 +180,10 @@ high because some papers have too many authors.
  at the time it is read.
 
 @<Internal...@>=
+ char *fn; /* file name */
+ FILE *fp; /* file pointer */
+ char line[MAX_LINE_LEN]; /* store file lines */
+ char *ptr;
 static Array *authors; /* store authors' info */
 
 @ The maximum number of authors is dictated by the macro
@@ -321,7 +247,7 @@ while (ptr != NULL) {
         aut.h = atoi(ptr);
 	if (aut.h <= 0) {
 	   fprintf(stderr, "==> h=%d <==\n", aut.h);
-	   panic("Wrong value of h-index, run confess mode.");
+	   panic("Wrong value of h-index");
 	}
 	/* Initialize K too */
 	aut.k = 0;
@@ -354,12 +280,8 @@ int is_comment(char *line) { @/
     if (!line)
        goto exit_is_comment; @/
 
-      if (line[0] == '#') { @/
-            if (verbose)
-      	       fprintf(stderr, "%s", line); @/
-
+      if (line[0] == '#')
 	    return 1;
-     } @/
 
     exit_is_comment:
       return 0;
@@ -581,33 +503,38 @@ for (i=0; i<N; i++) {/* for each author */
 int N=0;
 
 @ To open the proper file the Researcher ID is concatenated with
-|DATA_DIRECTORY| as prefix and the file extension |K_EXT| as suffix.
+|DATA_DIRECTORY| as prefix and the file extension |EXT| as suffix.
 
-@d K_EXT "tsv"
+@d EXT "txt"
 
 @<Process tsv file@>=
 paut = Array_get(authors, i);
 snprintf(buffer, MAX_LINE_LEN, "%s/%s.%s", DATA_DIRECTORY, \
-		 paut->id, K_EXT);
+		 paut->id, EXT);
 fn = buffer;
-fp = Fopen(fn, "r");
+paut->k = do_k(fn);
 
- pos=1;
- ncits=0, old_ncits = 1000000;
+@ @<Function...@>=
+int do_k(char *filename) {
+    int pos; /* temporary variable to store the paper position */
+    int ncits, old_ncits; /* current and old value of number of citings */
+    int j=0;
 
-if (confess) {
-     fprintf(stderr, "%d. %s\n", i+1, paut->id);
-      queue_reset();
+    fp = Fopen(fn, "r");
+
+     pos=1;
+     ncits=0, old_ncits = 1000000;
+
+     while (fgets(line, sizeof(line), fp) != NULL) {
+       	   @<Parse the line counting citings@>@;
+     }
+     Fclose(fp);
+
+     return pos;
 }
-
-while (fgets(line, sizeof(line), fp) != NULL) {
-       @<Parse the line counting citings@>@;
-}
-Fclose(fp);
 
 @ @<Local variables@>=
- int pos; /* temporary variable to store the paper position */
- int ncits, old_ncits; /* current and old value of number of citings */
+
 
 @ The file with citings has few lines to ignore, basically it is only one
 that begins with "PT $\backslash$t" (ignore double quotes). A line that begins
@@ -645,24 +572,19 @@ Cited\/} value from the end is fixed for all files.
         ptr = strtok(NULL, TSV_SEP);
   }
 
-  for (j=0; j<3; j++) @/
-      ptr = pop();
+  for (j=0; j<3; j++)
+         ptr = pop();
 
+   assert(ptr);
    ncits = atoi(ptr);
    stack_reset();
 
-   @<Check parsing integrity of citings@>@;
-   @<Enqueue temporary index value@>@;
+   @<Check invariant of citings@>@;
 
    old_ncits = ncits;
 
    if (pos > ncits) { /* found k */
        pos--;
-
-       paut = Array_get(authors, i);
-       paut->k = pos;
-
-       @<Write the last values@>@;
 
        break;
   }
@@ -678,29 +600,10 @@ char *ptr; /* Generic pointer */
  verification stops the program execution if this invariant is not
  obeyed.
 
-@<Check parsing integrity of citings@>=
+@<Check invariant of citings@>=
 if (old_ncits < ncits) {
    fprintf(stderr, "==> %d<%d <==\n", old_ncits, ncits);
    panic("Previous number of citings is lesser the the current one.");
-}
-
-@ @<Enqueue temporary index value@>=
-if (confess) @/
-   enqueue(ncits);
-
-@ @<Write the last values@>=
-if (confess) { @/
-   register int ii;
-
-   paut = Array_get(authors, i);
-   fprintf(stderr, "==> found K=%d <==\n <> Last values\n", paut->k);
-   for (ii=0; ii<PREV_NVALS; ii++) {
-       if (queue_is_empty())
-       	  break;
-
-       fprintf(stderr, " K: pos=%d, ncits=%d\n", (pos-- +1), \
-               dequeue_from_rear());
-   }
 }
 
 @** Stack. A humble stack is implemented to store few pointers using
@@ -781,7 +684,7 @@ register Author *qaut;
 the file name assigned to |RANK_FN|.  A space is needed between the
 bars and the content.
 
-@d RANK_FN "k-nobel.md"
+@d RANK_FN "rank.md"
 
 @<Write results to a file@>=
 fp = Fopen(RANK_FN, "w");
@@ -803,8 +706,8 @@ for (i=0; i<N; i++) {
 Fclose(fp);
 fprintf(stderr, "* Wrote \"%s\"\n", RANK_FN);
 
-@ @<Local...@>=
-Author *paut;
+@ @<Internal...@>=
+static Author *paut;
 
 @ A table with the twelve larger $K$s to be included in the manuscript
 is written in LaTeX format.
