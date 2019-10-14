@@ -1,8 +1,8 @@
 # K-INDEX
 
-- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of scientific awards.
+- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of who will be awarded with a scientific prize.
 - Testbed: gather most of the [Highly Cited Researchers](https://hcr.clarivate.com/) in Physics from Clarivate
-  	   and try to predict the Nobel Laureates. But the use of K-index is not limited to Nobel award.
+  	   and try to predict the Nobel Laureates. The use of K-index is not limited to Nobel Laureates prediction.
 	   We compare the results with the standard scientometric used by Web of Science, the
 	   h-index (Hirsch index).
 - Manuscript: [arXiv:1910.02369](https://arxiv.org/abs/1910.02369), 2019.
