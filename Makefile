@@ -1,32 +1,47 @@
+PROJ := k-index
+INSTALL :=  apt install
 CFLAGS := -g -Wall
-PKG := apt
-INSTALL := install
 WINCC := x86_64-w64-mingw32-gcc
 
-DATA_URL := 'https://drive.google.com/uc?export=download&id=1yuaGztX44jec657z_mSRcVv4cWG1sBaG'
+DATAZIP := /tmp/dataset.zip
+DATADIR := data
+DATAURL := 'https://drive.google.com/uc?export=download&id=1yuaGztX44jec657z_mSRcVv4cWG1sBaG'
 
-all: k-nobel k-nobel.pdf data
-	./k-nobel
+MAN1DIR := ${HOME}/.local/man/man1
 
-k-nobel: k-nobel.c
+.SILENT:
 
-k-nobel.exe: k-nobel.c
-	$(WINCC) $< -o $@
+rank.md: $(DATADIR)
+	./$(PROJ)
 
-k-nobel.pdf: k-nobel.tex
+$(PROJ): $(PROJ).c man
+	$(CC) $(CFLAGS) $< -o $@
+
+$(PROJ).exe: $(PROJ).c
+	$(WINCC) $(CFLAGS) $< -o $@
+
+$(PROJ).pdf: $(PROJ).tex
 	pdftex $<
 
-data: dataset.zip
+$(DATADIR): $(DATAZIP)
 	unzip $<
 
-deps:
-	`which sudo` $(PKG) $(INSTALL) cwebx gcc gcc-mingw-w64-x86-64
+$(DATAZIP):
+	wget --no-check-certificate -r $(DATAURL) -O $@
 
-dataset.zip:
-	wget --no-check-certificate -r $(DATA_URL) -O $@
+man: $(PROJ).1
+	-if [ ! -d $(MAN1DIR) ]; then mkdir -vp $(MAN1DIR); fi
+	-cp $< $(MAN1DIR)
+
+deps:
+	`which sudo` $(INSTALL) cwebx gcc gcc-mingw-w64-x86-64
 
 clean:
-	$(RM) k-nobel k-nobel.c k-nobel.dvi k-nobel.pdf k-nobel.tex \
-	      k-nobel.idx k-nobel.log k-nobel.scn k-nobel.toc
+	$(RM) $(PROJ) *.c *.exe \
+		*.dvi *.idx *.log *.pdf *.scn *.tex *.toc
 
-.PHONY: all clean
+tidy: clean
+	$(RM) -r $(DATADIR) $(DATAZIP)
+
+
+.PHONY: all clean deps man
