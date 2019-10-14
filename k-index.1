@@ -1,0 +1,61 @@
+.TH K-NOBEL.1
+.SH NAME
+k-index - calculate the K-index using data files in TSV (tab-delimited
+values) format from Web of Science.
+
+.SH SYNOPSIS
+.B k-index
+
+.B k-index
+file
+
+.B k-index
+file...
+
+.SH DESCRIPTION
+.B k-index
+reads input file(s) with information about citings of an author
+articles, among others, of a researcher and find out where the
+position of an article is greater or equal than the number of
+citings. This position is the so called \fB K-index\fR.
+
+If no arguments are passed to the program, \fBk-index\fR will read
+\fBidentifiers.dat\fR and get all authors' identifier in the 1st
+column. The convention is that all files with articles' authors
+citings are placed inside \fBdata/\fR directory with author's
+identifier as prefix of the file name with extension \fI.tsv\fR.  For
+example, if an author has \fB1234abcd\fR as identifier, her/his data
+is encountered inside a file named \fB./data/1234abcd.tsv\fR.  All
+existing files inside \fBdata/\fR directory are processed in batch
+mode.
+
+If a one or several arguments are passed to the program, they must
+be the data files in TSV format. The output is the file name and the
+K-index after it.
+
+.SH NOTES
+The data files must be in the format adopted by Web of Science. To download
+author's citings, the following procedure can be performed:
+.nr step 1 1
+.IP \n[step] 4
+Search for an author's publications at https://app.webofknowledge.com;
+.IP \n+[step]
+Click on the link \fICreate Citation Report\fR;
+.IP \n+[step]
+Click on the number link below \fICiting Articles without self-citations\fR;
+.IP \n+[step]
+Click on \fIExport...->\fIFast 5K...\fR->\fIExport\fR.
+
+The default name of downloaded file is \fIsavedrecs.txt\n. Rename it
+to the author identifier and the extension can be mantained
+untouched. Copy the renamed file to \fBdata/\fR directory.
+Append the author identifier value to the file \fIidentifiers.dat\fR.
+
+If the need is only process a few files, the put the list of files as
+argument to the program.
+
+.SH AUTHOR
+   Adriano J. Holanda
+
+.SH COPYRIGHT
+   Copyright \(co University of São Paulo 2019. k-nobel is released under MIT license.
