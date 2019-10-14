@@ -1,7 +1,11 @@
-# K-NOBEL
+# K-INDEX
 
-- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of Nobel Laureates in Physics.
-- Manuscript: [Citation network centrality: a scientific awards predictor?](https://arxiv.org/abs/1910.02369).
+- Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of scientific awards.
+- Testbed: gather most of the [Highly Cited Researchers](https://hcr.clarivate.com/) in Physics from Clarivate
+  	   and try to predict the Nobel Laureates. But the use of K-index is not limited to Nobel award.
+	   We compare the results with the standard scientometric used by Web of Science, the
+	   h-index (Hirsch index).
+- Manuscript: [arXiv:1910.02369](https://arxiv.org/abs/1910.02369), 2019.
 
 ## Research Team
 
@@ -25,8 +29,7 @@ $ make
 
 ### Manual
 
-The following steps are less automatized but the dependencies are
-decreased:
+The following steps are less automated but they have less dependencies:
 
 - Download the data using the [link](https://drive.google.com/uc?export=download&id=1yuaGztX44jec657z_mSRcVv4cWG1sBaG);
 - Unzip the downloaded data;
