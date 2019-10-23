@@ -25,7 +25,8 @@ function echo_hash() {
 	usage
     fi
 
-    name=$1
+    name=$2
+    echo ${name}
     printf "$name" >${file}
     md5str=`md5sum ${file} |awk '{print $1}'`
     echo $md5str
