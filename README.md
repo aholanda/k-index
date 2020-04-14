@@ -33,8 +33,8 @@ The following steps are less automated but they have less dependencies:
 
 - Download the data using the [link](https://drive.google.com/uc?export=download&id=1yuaGztX44jec657z_mSRcVv4cWG1sBaG);
 - Unzip the downloaded data;
-- Download the program binary [Linux-x86_64](k-nobel) or
-  [Windows-x86_64](k-nobel.exe) according to the platform;
+- Download the program binary [Linux-x86_64](k-index) or
+  [Windows-x86_64](k-index.exe) according to the platform;
 - Run the program in the same directory where the data were extracted.
 
 ## Documentation
@@ -45,7 +45,7 @@ The following steps are less automated but they have less dependencies:
 
 - [Luis Fernando Castro](https://github.com/ferdox2) - [fixes some
   grammatical and spelling
-  errors](https://github.com/ajholanda/k-nobel/pull/9/).
+  errors](https://github.com/ajholanda/k-index/pull/9/).
 
 ## References
 
