@@ -39,7 +39,7 @@ The following steps are less automated but they have less dependencies:
 
 ## Documentation
 
-- [Program documentation](k-nobel.pdf).
+- [Program documentation](k-index.pdf).
 
 ## Contributor
 
