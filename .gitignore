@@ -10,3 +10,5 @@ md5.dat
 /k-index.scn
 /k-index.tex
 /k-index.toc
+*~
+/__pycache__/
