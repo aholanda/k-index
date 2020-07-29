@@ -1,8 +1,17 @@
 #!/usr/bin/env python3
 # Inspired by: https://github.com/Clarivate-SAR/incites-retrieve/blob/master/batch_lookup_v1.py
 
+import csv, os, sys
+
+from urllib.request import urlopen, Request
+from urllib.parse import urlencode
+from itertools import zip_longest as zipl
+
+# local
+from wos import WoS
+from utils import print_error_and_exit
+
 URL = "https://api.clarivate.com/api/incites/DocumentLevelMetricsByUT/json"
-INCITES_KEY = os.environ['INCITES_KEY']
 ESCI = False # Set to True to include ESCI in results
 # Number of UTs to send to InCites at once - 100 is limit set by API.
 BATCH_SIZE = 100
@@ -43,21 +52,6 @@ def eprint(*args, **kwargs):
     """
     print(*args, file=sys.stderr, **kwargs)
 
-
-def get(batch):
-    data = []
-    params = urlencode({'UT': ",".join([b for b in batch if b is not None])})
-    if ESCI:
-        params += '&esci=y'
-    url = "{}?{}".format(URL, params)
-    q = Request(url)
-    q.add_header('X-ApiKey', INCITES_KEY)
-    rsp = urlopen(q)
-    raw = json.loads(rsp.read().decode('utf-8'))
-    data = [item for item in raw['api'][0]['rval']]
-    return data
-
-
 def main():
 
     found = []
@@ -80,6 +74,16 @@ def main():
             writer.writerow(grp)
         time.sleep(.5)
 
+def check_key():
+    if 'WOS_KEY' not in os.environ:
+        print_error_and_exit('Environment variable "WOS_KEY" was not set, '
+                             'please set it with the Web of Science'
+                             ' developer key provided by Clarivate'
+                             ' Analytics.')
+
+    return os.environ['WOS_KEY']
 
 if __name__ == "__main__":
-    main()
+    key = check_key()
+
+    wos = WoS(key)
