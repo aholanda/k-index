@@ -8,10 +8,9 @@ from urllib.parse import urlencode
 from itertools import zip_longest as zipl
 
 # local
-from wos import WoS
+from wos_lite import WoSLite
 from utils import print_error_and_exit
 
-URL = "https://api.clarivate.com/api/incites/DocumentLevelMetricsByUT/json"
 ESCI = False # Set to True to include ESCI in results
 # Number of UTs to send to InCites at once - 100 is limit set by API.
 BATCH_SIZE = 100
@@ -43,14 +42,6 @@ def grouper(iterable, n, fillvalue=None):
     """
     args = [iter(iterable)] * n
     return zipl(*args, fillvalue=fillvalue)
-
-
-def eprint(*args, **kwargs):
-    """
-    Utility for printing to stderr.
-    http://stackoverflow.com/a/14981125/758157
-    """
-    print(*args, file=sys.stderr, **kwargs)
 
 def main():
 
@@ -86,4 +77,6 @@ def check_key():
 if __name__ == "__main__":
     key = check_key()
 
-    wos = WoS(key)
+    batch = ['01288946', '000235983900007', '000253436400011']
+    wos = WoSLite(key)
+    wos.get(batch)
