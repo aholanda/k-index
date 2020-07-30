@@ -2,9 +2,9 @@
 
 - Aim: Use [K-index](https://arxiv.org/abs/1609.05273v2) as a predictor of who will be awarded with a scientific prize.
 - Testbed: gather most of the [Highly Cited Researchers](https://hcr.clarivate.com/) in Physics from Clarivate
-  	   and try to predict the Nobel Laureates. The use of K-index is not limited to Nobel Laureates prediction.
-	   We compare the results with the standard scientometric index used by Web of Science, the
-	   h-index (Hirsch index).
+       and try to predict the Nobel Laureates. The use of K-index is not limited to Nobel Laureates prediction.
+       We compare the results with the standard scientometric index used by Web of Science, the
+       h-index (Hirsch index).
 - Manuscript: [arXiv:1910.02369](https://arxiv.org/abs/1910.02369), 2019.
 
 ## Research Team
@@ -49,6 +49,8 @@ The following steps are less automated but they have less dependencies:
 
 ## References
 
+### Conceptual
+
 - J. E. Hirsch. ["An index to quantify an individual's scientific
 research output,"](https://www.pnas.org/content/102/46/16569) *PNAS*
 **102** (15) 16569-16572, 2005. [[*Wikpedia*
@@ -57,3 +59,9 @@ entry](https://en.wikipedia.org/wiki/H-index)]
 impact index for scientific innovation and
 recognition,"](https://arxiv.org/abs/1609.05273v2)
 *arXiv*:1609.05273v2, 2017.
+
+### Technical
+
+
+- [Clarivate Analytics' Web Services Lite
+  API](https://api.clarivate.com/api/woslite/), endpoint.
