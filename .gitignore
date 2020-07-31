@@ -12,3 +12,7 @@ md5.dat
 /k-index.toc
 *~
 /__pycache__/
+/batch_lookup_v1.py
+/batch_lookup_v2.py
+/key.sh
+/test.txt
