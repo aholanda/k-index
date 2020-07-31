@@ -41,6 +41,21 @@ The following steps are less automated but they have less dependencies:
 
 - [Program documentation](k-index.pdf).
 
+## Conceptual clarification
+
+The *K* stands for Kinouchi index and it was prososed by O. Kinouchi
+*et al.* [<a href="#kref">2</a>]. If an author receives at least K
+citations, where each one of these K citations have get at least K
+citations, then the author's $K$-index was found. On Web of Science
+homepage, the procedure to find the K of an author may be:
+
+- Search for an author's publications using [Web of Science](http://apps.webofknowledge.com/);
+- Click on the link *Create Citation Report*;
+- Click on the link *Citing Articles without self-citations*;
+- Traverse the list, stoping when the rank position of the article were
+      greater than the *Times Cited*;
+- Subtract one from the rank position, this is the *K* value.
+
 ## Contributor
 
 - [Luis Fernando Castro](https://github.com/ferdox2) - [fixes some
@@ -51,17 +66,18 @@ The following steps are less automated but they have less dependencies:
 
 ### Conceptual
 
-- J. E. Hirsch. ["An index to quantify an individual's scientific
-research output,"](https://www.pnas.org/content/102/46/16569) *PNAS*
-**102** (15) 16569-16572, 2005. [[*Wikpedia*
+<a name="href">1. J. E. Hirsch. ["An index to quantify an
+individual's scientific research
+output,"](https://www.pnas.org/content/102/46/16569) *PNAS* **102**
+(15) 16569-16572, 2005. [[*Wikpedia*
 entry](https://en.wikipedia.org/wiki/H-index)]
-- O. Kinouchi, L. D. H. Soares, G. C. Cardoso. ["A simple
-impact index for scientific innovation and
+
+<a name="kref">2. O. Kinouchi, L. D. H. Soares, G. C. Cardoso. ["A
+simple impact index for scientific innovation and
 recognition,"](https://arxiv.org/abs/1609.05273v2)
-*arXiv*:1609.05273v2, 2017.
+*arXiv*:1609.05273v2, 2017.</a>
 
 ### Technical
 
-
-- [Clarivate Analytics' Web Services Lite
+1. [Clarivate Analytics' Web Services Lite
   API](https://api.clarivate.com/api/woslite/), endpoint.
