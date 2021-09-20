@@ -3,10 +3,12 @@ data
 data.zip
 genhash.pl
 md5.dat
-/k-index.c
-/k-index.dvi
-/k-index.idx
-/k-index.log
-/k-index.scn
-/k-index.tex
-/k-index.toc
+
+# R notebook
+*.nb.html
+.Rproj.user
+.RData
+.Rhistory
+
+# backups
+*~
