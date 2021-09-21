@@ -35,29 +35,28 @@ more specifically in
 [Clarivate](https://hcr.clarivate.com/\#categories\%3Dphysics) page of
 most cited authors in physics.
 
-The fields are separated by semicolon inside |authors.idx|, a record in
+The fields are separated by semicolon inside `authors.idx`, a record in
 the file looks like
 
-```{csv}
-L-000-000;Joe Doe;http//joedoe.edu
+```{echo = FALSE, message = FALSE}
+L-000-000;Joe Doe;http//joedoe.edu;55;200101311200
 ```
 
 \noindent where the first field `L-000-000` is the Research ID or ORCID,
 when the author doesn't have an identifier, a custom
 number is assigned. The second field `Joe Doe` is the author name
 and the third field is the link to the page that contains information
-about author's publications. A structure is loaded with these data and
-a pointer to this structure is passed to the array |authors|.  Lately,
-$h$-index and $K$-index will be calculated and assigned to the proper
-field in the structure.
+about author's publications. The fourth column is the author's 
+`h-index` and the fifth is the timestamp representing the date and 
+time when the `h-index` was updated.
 
 # Indices Calculation
 
-There is procedure in this program to
-calculate the Scientometrics index $K$. The $h$ is the Hirsch index
+The $h$ is the Hirsch index
 proposed by Hirsch [-@hirsch2005]. It is obtained at Web of Science, so no further
 procedure is needed. 
-The $K$ index and was proposed by Kinouch _et al._ [-@kinouchi2018].
+The $K$ index and was proposed by Kinouch _et al._ [-@kinouchi2018] and its 
+calculation is presented in the [section on K-index][K-index].
 
 ## h-index
 
@@ -84,7 +83,7 @@ authors <- read.csv(file = "phys.csv",
 
 ```
 
-## K-index. 
+## K-index
 
 If an author receives at least K citations, where each
 one of these K citations have get at least K citations, then the
@@ -102,10 +101,16 @@ To calculate in batch mode, we downloaded a file with the data to
 calculate the $K$ by clicking on the button `Export...` and
 selecting `Fast 5K` format that saves the same data, with limit
 of 5.000 records, where each field is separated by one or more tabs
-that is assigned to variable `kindex.tsv.sep`.
+that is assigned to variable `k.index.tsv.sep`.
+
+The file name assigned to `nobel.laureates.file.name` contains the
+authors (identifier) that already received the Nobel prize. This list 
+is used to eliminate them from the process of authors ranking.
+
 
 ```{r}
-kindex.tsv.sep <- "\t"
+k.index.tsv.sep <- "\t"
+nobel.laureates.file.name <- "laureates_in.csv"
 ```
 
 
